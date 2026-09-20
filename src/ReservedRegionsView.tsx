@@ -1,11 +1,13 @@
-import type { ColorValue, ViewProps } from 'react-native';
+import { View, type ViewProps } from 'react-native';
+import type { RegionsChangeEvent } from './ReservedRegionsViewNativeComponent';
 
-type Props = ViewProps & {
-  color?: ColorValue;
+export type ReservedRegionsViewProps = ViewProps & {
+  onRegionsChange?: (event: { nativeEvent: RegionsChangeEvent }) => void;
 };
 
-export function ReservedRegionsView(_props: Props): never {
-  throw new Error(
-    "'react-native-reserved-regions' is only supported on native platforms."
-  );
+export function ReservedRegionsView({
+  onRegionsChange: _onRegionsChange,
+  ...props
+}: ReservedRegionsViewProps) {
+  return <View {...props} />;
 }

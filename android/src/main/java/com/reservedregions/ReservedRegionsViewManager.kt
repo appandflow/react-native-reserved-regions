@@ -1,38 +1,34 @@
 package com.reservedregions
 
-import android.graphics.Color
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
-import com.facebook.react.uimanager.ViewManagerDelegate
-import com.facebook.react.uimanager.annotations.ReactProp
+import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.viewmanagers.ReservedRegionsViewManagerInterface
 import com.facebook.react.viewmanagers.ReservedRegionsViewManagerDelegate
 
 @ReactModule(name = ReservedRegionsViewManager.NAME)
-class ReservedRegionsViewManager : SimpleViewManager<ReservedRegionsView>(),
+class ReservedRegionsViewManager : ViewGroupManager<ReservedRegionsView>(),
   ReservedRegionsViewManagerInterface<ReservedRegionsView> {
-  private val mDelegate: ViewManagerDelegate<ReservedRegionsView>
+  private val delegate = ReservedRegionsViewManagerDelegate(this)
 
-  init {
-    mDelegate = ReservedRegionsViewManagerDelegate(this)
-  }
+  override fun getDelegate() = delegate
 
-  override fun getDelegate(): ViewManagerDelegate<ReservedRegionsView>? {
-    return mDelegate
-  }
+  override fun getName() = NAME
 
-  override fun getName(): String {
-    return NAME
-  }
+  override fun createViewInstance(context: ThemedReactContext) = ReservedRegionsView(context)
 
-  public override fun createViewInstance(context: ThemedReactContext): ReservedRegionsView {
-    return ReservedRegionsView(context)
-  }
+  override fun getExportedCustomDirectEventTypeConstants() =
+    mutableMapOf(RegionsChangeEvent.NAME to mutableMapOf("registrationName" to "onRegionsChange"))
 
-  @ReactProp(name = "color")
-  override fun setColor(view: ReservedRegionsView?, color: Int?) {
-    view?.setBackgroundColor(color ?: Color.TRANSPARENT)
+  override fun addEventEmitters(reactContext: ThemedReactContext, view: ReservedRegionsView) {
+    super.addEventEmitters(reactContext, view)
+    view.setOnRegionsChangeHandler { source, regions ->
+      val sourceContext = source.context as ReactContext
+      UIManagerHelper.getEventDispatcherForReactTag(sourceContext, source.id)
+        ?.dispatchEvent(RegionsChangeEvent(UIManagerHelper.getSurfaceId(sourceContext), source.id, regions))
+    }
   }
 
   companion object {
