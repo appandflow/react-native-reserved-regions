@@ -1,7 +1,5 @@
 #import "ReservedRegionsView.h"
 
-#import <objc/message.h>
-
 #import <react/renderer/components/ReservedRegionsViewSpec/ComponentDescriptors.h>
 #import <react/renderer/components/ReservedRegionsViewSpec/EventEmitters.h>
 #import <react/renderer/components/ReservedRegionsViewSpec/Props.h>
@@ -47,37 +45,22 @@ using namespace facebook::react;
     return;
   }
 
-  // UIView reserved region selectors first ship in the iOS 27.1 SDK.
-  SEL querySelector = NSSelectorFromString(@"reservedRegionsOfKind:options:");
-  Class kindClass = NSClassFromString(@"UIViewReservedRegionKind");
   NSMutableArray<NSDictionary *> *regions = [NSMutableArray new];
-
-  if ([self respondsToSelector:querySelector] && kindClass != nil) {
-    NSArray<NSDictionary<NSString *, NSString *> *> *kinds = @[
-      @{@"selector": @"divisionRegionKind", @"kind": @"division"},
-      @{@"selector": @"occlusionRegionKind", @"kind": @"occlusion"},
+#if defined(__IPHONE_27_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_1
+  if (@available(iOS 27.1, *)) {
+    NSArray<UIViewReservedRegionKind *> *kinds = @[
+      UIViewReservedRegionKind.divisionRegionKind,
+      UIViewReservedRegionKind.occlusionRegionKind,
     ];
-
-    for (NSDictionary<NSString *, NSString *> *entry in kinds) {
-      SEL kindSelector = NSSelectorFromString(entry[@"selector"]);
-      if (![kindClass respondsToSelector:kindSelector]) {
-        continue;
-      }
-
-      id kind = ((id (*)(id, SEL))objc_msgSend)(kindClass, kindSelector);
-      NSArray *results = ((NSArray *(*)(id, SEL, id, NSUInteger))objc_msgSend)(self, querySelector, kind, 0);
-      for (id region in results) {
-        if (![region respondsToSelector:@selector(frame)]) {
-          continue;
-        }
-        CGRect frame = [[region valueForKey:@"frame"] CGRectValue];
-        [regions addObject:@{
-          @"kind": entry[@"kind"],
-          @"frame": [NSValue valueWithCGRect:frame],
-        }];
+    NSArray<NSString *> *names = @[@"division", @"occlusion"];
+    for (NSUInteger index = 0; index < kinds.count; index++) {
+      for (UIViewReservedRegion *region in [self reservedRegionsOfKind:kinds[index]
+                                                              options:UIViewReservedRegionQueryOptionsNone]) {
+        [regions addObject:@{@"kind": names[index], @"frame": [NSValue valueWithCGRect:region.frame]}];
       }
     }
   }
+#endif
 
   if ([_currentRegions isEqualToArray:regions]) {
     return;

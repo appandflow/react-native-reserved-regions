@@ -1,0 +1,55 @@
+---
+title: Platform behavior
+description: How UIKit and Jetpack WindowManager map to the public API.
+---
+
+## iOS
+
+When built with the iOS 27.1 SDK or later and running on iOS 27.1 or later, the provider queries UIKit's active `UIView` reserved regions for the division and occlusion kinds. It passes the default query options, which exclude inactive regions.
+
+| UIKit result     | JavaScript result                            |
+| ---------------- | -------------------------------------------- |
+| Division region  | `kind: 'division'`, `occludesContent: false` |
+| Occlusion region | `kind: 'occlusion'`                          |
+
+The implementation assumes iOS divisions do not hide content. This is a library mapping, not a separate UIKit occlusion property. Occlusion frames can cover hardware or supported system UI and may include interaction margins.
+
+The implementation calls typed UIKit APIs behind both an SDK compile guard and a runtime availability check:
+
+```objc
+#if defined(__IPHONE_27_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_1
+if (@available(iOS 27.1, *)) {
+  // The typed UIKit queries are compiled only with a supporting SDK.
+}
+#endif
+```
+
+Building with an older SDK compiles out reserved-region observation. Such a build returns empty arrays even on an iOS 27.1 device. A build with a supporting SDK also returns empty arrays on an older runtime. Rebuild with the newer SDK to enable the APIs; a device OS update alone is insufficient.
+
+Region measurements refresh when the provider lays out or moves into a window. Inactive regions are not exposed.
+
+To test iPhone Duo behavior, use an Xcode and simulator runtime that include it. Automated iOS fold-transition coverage has not yet been established.
+
+[Apple: adaptive layouts on iPhone Duo](https://developer.apple.com/videos/play/tech-talks/111463/)
+
+## Android
+
+The library observes Jetpack WindowManager `1.5.1` and reads display cutout bounding rectangles from window insets.
+
+| Native result                        | JavaScript result                               |
+| ------------------------------------ | ----------------------------------------------- |
+| Separating `FoldingFeature`          | `division`                                      |
+| Fully occluding `FoldingFeature`     | `division`, even if it is not marked separating |
+| `OcclusionType.FULL` on that feature | `occludesContent: true`                         |
+| Other included folding features      | `occludesContent: false`                        |
+| Display cutout rectangle on API 28+  | `occlusion`                                     |
+
+A non-separating fold with no full occlusion is omitted. Hardware and posture determine what WindowManager reports; an emulator needs a compatible foldable profile to provide folding features. Cutouts and folds are separate sources, so a provider can receive both kinds at once.
+
+The Android implementation reports display cutouts and the included folding features. It does not report arbitrary overlapping app windows, the keyboard, or system bars as occlusion rectangles.
+
+[Android: FoldingFeature](https://developer.android.com/reference/androidx/window/layout/FoldingFeature) · [Android: DisplayCutout](https://developer.android.com/reference/android/view/DisplayCutout)
+
+## Other platforms
+
+The fallback component renders a React Native `View` and emits no native region events. Consumers receive an empty list. There is no browser fold or display-cutout integration.

@@ -1,8 +1,4 @@
-import {
-  codegenNativeComponent,
-  type CodegenTypes,
-  type ViewProps,
-} from 'react-native';
+import { codegenNativeComponent, type CodegenTypes, type ViewProps } from 'react-native';
 
 export type RegionsChangeEvent = Readonly<{
   regions: {
