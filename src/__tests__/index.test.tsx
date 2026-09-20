@@ -1,15 +1,10 @@
 import * as React from 'react';
 import { expect, it, jest } from '@jest/globals';
 import { act, create } from 'react-test-renderer';
-import {
-  ReservedRegionsProvider,
-  useReservedRegions,
-  type ReservedRegion,
-} from '../index';
+import { ReservedRegionsProvider, useReservedRegions, type ReservedRegion } from '../index';
 import type { RegionsChangeEvent } from '../ReservedRegionsViewNativeComponent';
 
-let mockOnRegionsChange:
-  ((event: { nativeEvent: RegionsChangeEvent }) => void) | undefined;
+let mockOnRegionsChange: ((event: { nativeEvent: RegionsChangeEvent }) => void) | undefined;
 
 jest.mock('../ReservedRegionsView', () => ({
   ReservedRegionsView: ({
@@ -35,7 +30,7 @@ it('reports provider-relative region kinds and occlusion flags', async () => {
     create(
       <ReservedRegionsProvider>
         <Probe />
-      </ReservedRegionsProvider>
+      </ReservedRegionsProvider>,
     );
   });
   expect(observed.at(-1)).toEqual([]);

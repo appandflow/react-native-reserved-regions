@@ -22,10 +22,7 @@ On iOS, install pods in your app's `ios` directory. Android links automatically 
 ## Usage
 
 ```tsx
-import {
-  ReservedRegionsProvider,
-  useReservedRegions,
-} from 'react-native-reserved-regions';
+import { ReservedRegionsProvider, useReservedRegions } from 'react-native-reserved-regions';
 
 function Screen() {
   const regions = useReservedRegions();
@@ -69,7 +66,7 @@ A division splits the available display. `occludesContent` tells you whether con
 
 ## Native sources
 
-- iOS queries UIKit's active `UIView` reserved division and occlusion regions on the provider view. The selectors are resolved at runtime so the library can compile with an SDK older than iOS 27.1. [Apple's reserved regions overview](https://developer.apple.com/videos/play/tech-talks/111463/)
+- iOS queries UIKit's active `UIView` reserved division and occlusion regions on the provider view. Typed UIKit calls are guarded by the SDK version and runtime availability. Building with an SDK older than iOS 27.1 compiles out this feature. [Apple's reserved regions overview](https://developer.apple.com/videos/play/tech-talks/111463/)
 - Android observes Jetpack WindowManager `FoldingFeature` values and Android display cutout rectangles. A separating or fully occluding fold becomes a division; `OcclusionType.FULL` sets `occludesContent` to `true`. Display cutouts become occlusions. [FoldingFeature reference](https://developer.android.com/reference/androidx/window/layout/FoldingFeature), [WindowInsets reference](https://developer.android.com/reference/android/view/WindowInsets)
 
 The library reports geometry and does not reposition content. Normal safe area insets, system bars, and keyboard insets remain separate concerns.
@@ -77,14 +74,20 @@ The library reports geometry and does not reposition content. Normal safe area i
 ## Development
 
 ```sh
-yarn install
-yarn typecheck
-yarn lint
-yarn test --watch=false
-yarn prepare
+pnpm install --frozen-lockfile
+pnpm run format:check
+pnpm run lint
+pnpm run typecheck
+pnpm test
+pnpm run build
+pnpm run docs:build
 ```
 
-To run the example, use `yarn example start`, then `yarn example ios` or `yarn example android`.
+The example includes full-screen, inset and content-box providers with
+`react-native-safe-area-context` values and overlays for comparison.
+See [the development workflow](docs/workflow.md) for native runs,
+[the docs website](website/README.md) for local previews, and
+[the release process](RELEASE.md) for publishing.
 
 ## License
 

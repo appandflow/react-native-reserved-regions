@@ -12,6 +12,7 @@ const root = path.resolve(__dirname, '..');
  */
 const config = withMetroConfig(getDefaultConfig(__dirname), {
   root,
+  workspaces: ['example'],
   dirname: __dirname,
   conditions: ['react-native-reserved-regions-source'],
 });

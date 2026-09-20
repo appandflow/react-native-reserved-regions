@@ -31,15 +31,10 @@ export type ReservedRegion =
       frame: ReservedRegionFrame;
     }>;
 
-const ReservedRegionsContext = React.createContext<
-  readonly ReservedRegion[] | null
->(null);
+const ReservedRegionsContext = React.createContext<readonly ReservedRegion[] | null>(null);
 
 /** Makes active reserved regions available to descendants in provider coordinates. */
-export function ReservedRegionsProvider({
-  children,
-  ...props
-}: ViewProps): React.JSX.Element {
+export function ReservedRegionsProvider({ children, ...props }: ViewProps): React.JSX.Element {
   const [regions, setRegions] = React.useState<readonly ReservedRegion[]>([]);
 
   return (
@@ -62,7 +57,7 @@ export function ReservedRegionsProvider({
                 return [{ kind: 'occlusion' as const, frame: region.frame }];
               }
               return [];
-            })
+            }),
           );
         }}
       >
@@ -76,9 +71,7 @@ export function ReservedRegionsProvider({
 export function useReservedRegions(): readonly ReservedRegion[] {
   const regions = React.useContext(ReservedRegionsContext);
   if (regions === null) {
-    throw new Error(
-      'useReservedRegions must be used inside ReservedRegionsProvider'
-    );
+    throw new Error('useReservedRegions must be used inside ReservedRegionsProvider');
   }
   return regions;
 }
