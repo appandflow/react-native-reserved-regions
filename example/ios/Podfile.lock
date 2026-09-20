@@ -1741,7 +1741,7 @@ PODS:
     - React-utils (= 0.88.0-rc.1)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.88.0-rc.1)
-  - ReservedRegions (0.1.0-alpha.0):
+  - ReservedRegions (0.1.0-alpha.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2121,7 +2121,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 2ab193ed73a27dd991dcbd196b05e6393c692fbc
   ReactCommon: cb43d161764e3bac17dac2a80dce2b4edf5b3a2f
   ReactNativeDependencies: dabb9681fdf66316a899de1ce3ef247606b513a8
-  ReservedRegions: 376e50c9182aa5709c5fcee7ce0c696f8364f3c8
+  ReservedRegions: 84a8a06479c5a6c74934587a4c78111bb7a89a94
   SocketRocket: 37aec555668fb852ec12e3c0de59a86ca58f0871
   Yoga: d1c536142c5ff8ec8cd856ab2a7c227a1d875c8e
 
