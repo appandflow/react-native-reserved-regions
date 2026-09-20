@@ -7,13 +7,13 @@
     "ios",
     "react-native"
   ],
-  "homepage": "https://github.com/AppAndFlow/react-native-reserved-regions#readme",
-  "bugs": "https://github.com/AppAndFlow/react-native-reserved-regions/issues",
+  "homepage": "https://github.com/appandflow/react-native-reserved-regions#readme",
+  "bugs": "https://github.com/appandflow/react-native-reserved-regions/issues",
   "license": "MIT",
   "author": "Janic Duplessis <janicduplessis@gmail.com> (https://github.com/janicduplessis)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AppAndFlow/react-native-reserved-regions.git"
+    "url": "git+https://github.com/appandflow/react-native-reserved-regions.git"
   },
   "files": [
     "src",
