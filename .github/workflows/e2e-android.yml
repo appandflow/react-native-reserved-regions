@@ -1,156 +1,624 @@
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))name: E2E Android
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))on:
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  workflow_dispatch:
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  pull_request:
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))    types: [labeled, synchronize]
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))permissions:
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  contents: read
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))jobs:
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  e2e:
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))|| contains(github.event.pull_request.labels.*.name, 'e2e-android')
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))    runs-on: ubuntu-latest
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))    timeout-minutes: 60
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))    steps:
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - uses: ./.github/actions/setup
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))        with:
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          distribution: zulu
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          java-version: '17'
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - name: Enable KVM
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))        run: |
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          sudo udevadm control --reload-rules
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          sudo udevadm trigger --name-match=kvm
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - run: npm install --global agent-device@0.20.10
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))        with:
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          api-level: 35
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          target: google_apis
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          arch: x86_64
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          profile: 7.6in Foldable
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          script: E2E_ANDROID_SERIAL="emulator-$EMULATOR_PORT" pnpm run e2e:android
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))        if: always()
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))        with:
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          name: e2e-android-screenshots
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          path: e2e/artifacts
-if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
-  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          if-no-files-found: warn
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))name: E2E Android
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))on:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  workflow_dispatch:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  pull_request:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))    types: [labeled, synchronize]
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))permissions:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  contents: read
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))jobs:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  e2e:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))|| contains(github.event.pull_request.labels.*.name, 'e2e-android')
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))    timeout-minutes: 60
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))    steps:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - uses: ./.github/actions/setup
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))        with:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          distribution: zulu
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          java-version: '17'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - name: Enable KVM
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))        run: |
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          sudo udevadm control --reload-rules
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          sudo udevadm trigger --name-match=kvm
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - run: npm install --global agent-device@0.20.10
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))        with:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          api-level: 35
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          target: google_apis
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          arch: x86_64
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          profile: 7.6in Foldable
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          script: E2E_ANDROID_SERIAL="emulator-$EMULATOR_PORT" pnpm run e2e:android
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))        if: always()
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))        with:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          name: e2e-android-screenshots
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          path: e2e/artifacts
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))if: >-
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  github.event_name == 'workflow_dispatch' ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'e2e-android') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))  (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'e2e-android'))          if-no-files-found: warn
