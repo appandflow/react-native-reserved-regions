@@ -68,6 +68,21 @@ type ReservedRegion =
 
 A division splits the available display. `occludesContent` tells you whether content under that division is hidden. An occlusion is an area where content is hidden. On iOS, division regions currently report `occludesContent: false`. The TypeScript declarations in `src/index.tsx` document every field.
 
+## Why a provider and a hook?
+
+A reserved region needs a coordinate space: the same fold has different local
+coordinates in a full-screen view and an inset panel. `ReservedRegionsProvider`
+renders the native view that defines those bounds and shares its measurements
+with descendants. `useReservedRegions()` reads the nearest provider, so several
+consumers can use the same measurements without each adding a native view. Place
+a provider around each area that needs its own coordinate space; it can replace
+an existing container `View`.
+
+[react-native-hinges](https://appandflow.github.io/react-native-hinges/docs/usage)
+exposes a hook without a provider because posture and angle do not depend on a
+child view's position or size. It observes the existing React root's hierarchy/window.
+Use both libraries when layout and animation need those separate inputs.
+
 ## Native sources
 
 - iOS queries UIKit's active `UIView` reserved division and occlusion regions on the provider view. Typed UIKit calls are guarded by the SDK version and runtime availability. Building with an SDK older than iOS 27.1 compiles out this feature. [Apple's reserved regions overview](https://developer.apple.com/videos/play/tech-talks/111463/)

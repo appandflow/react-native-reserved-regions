@@ -41,6 +41,31 @@ export default function App() {
 
 The provider accepts standard React Native `View` props, including `style` and `onLayout`. It measures its own native view and supplies region data; it does not pad, split, or reposition your content.
 
+## Why a provider and a hook?
+
+The provider defines **which view the geometry belongs to**. For example, a fold
+at `x = 300` in a full-screen provider would be at `x = 276` in a panel whose left
+edge is 24 points farther right, if the fold still intersects that panel. A hook
+with only a window snapshot could not know which panel's coordinates you need.
+
+`ReservedRegionsProvider` renders a native view so it can measure that view's
+position and bounds. React context shares the resulting snapshot with its
+descendants; `useReservedRegions()` reads the nearest snapshot without rendering
+another view. Multiple consumers can share one provider. Add a nested provider
+when a panel needs its own coordinate space, and use the provider in place of an
+existing container `View` where possible.
+
+[react-native-hinges](https://appandflow.github.io/react-native-hinges/docs/usage)
+uses the existing React root as its observation scope. Posture and angle do not
+change just because a child panel moves, so `useHinges()` needs no extra provider
+or native view. The libraries can be used together: hinge readings drive behavior
+or animation, while reserved regions supply the geometry for layout. A division
+rectangle and a hinge reading have no shared ID or guaranteed array-index mapping.
+
+The provider's own position and bounds determine the geometry; placing a consumer
+inside a nested child `View` does not change the coordinate origin. See
+[coordinate spaces](./coordinates.md) for platform details.
+
 ## First render and updates
 
 `useReservedRegions()` initially returns `[]`; `useReservedRegionsReady()` initially returns `false`. The first measurement updates both together, including when the result is empty. Readiness then stays true for that provider's lifetime. A newly mounted provider starts pending. Use readiness to distinguish waiting for an initial result from a measured empty array.
