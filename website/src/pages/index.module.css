@@ -84,6 +84,10 @@
   border: 2px solid var(--rr-border);
   border-radius: 23px;
   background: var(--ifm-background-color);
+  transition: padding 360ms ease;
+}
+.deviceLandscape {
+  padding: 13px;
 }
 .provider {
   height: 262px;
@@ -92,6 +96,10 @@
   position: relative;
   background-image: radial-gradient(var(--rr-border) 0.7px, transparent 0.7px);
   background-size: 12px 12px;
+  transition: height 360ms ease;
+}
+.providerLandscape {
+  height: 190px;
 }
 .origin {
   position: absolute;
@@ -106,6 +114,24 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 42px;
+}
+.providerLandscape .panes {
+  inset: 48px 18px 18px;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 16px;
+}
+.providerLandscape .stubTitle {
+  height: 6px;
+  margin-bottom: 7px;
+}
+.providerLandscape .stub {
+  height: 3px;
+  margin-bottom: 4px;
+}
+.providerLandscape .tile {
+  height: 26px;
+  margin: 7px 0;
 }
 .pane {
   min-width: 0;
@@ -149,6 +175,19 @@
   font: 0.62rem var(--ifm-font-family-monospace);
   color: #8a4516;
 }
+.providerLandscape .fold {
+  top: 53%;
+  right: 0;
+  bottom: auto;
+  left: 0;
+  border-top: 2px solid #d57839;
+  border-left: 0;
+}
+.providerLandscape .fold span {
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 .cutout {
   position: absolute;
   top: 11px;
@@ -169,6 +208,42 @@
   padding: 2px 7px;
   font: 0.62rem var(--ifm-font-family-monospace);
   color: #6936a7;
+}
+.providerLandscape .cutout {
+  top: 8px;
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.providerLandscape .cutout span {
+  top: 22px;
+  right: 50%;
+  transform: translateX(50%);
+}
+.previewControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 25px 18px;
+  color: var(--rr-muted);
+  font: 0.64rem var(--ifm-font-family-monospace);
+}
+.rotateButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--rr-border);
+  border-radius: 6px;
+  padding: 6px 9px;
+  color: var(--ifm-font-color-base);
+  background: var(--ifm-background-color);
+  cursor: pointer;
+  font: inherit;
+}
+.rotateButton:hover {
+  border-color: var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
 }
 .previewCaption {
   display: flex;
@@ -372,5 +447,11 @@
   }
   .referenceLink {
     font-size: 0.76rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .device,
+  .provider {
+    transition: none;
   }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import CodeBlock from '@theme/CodeBlock';
@@ -15,18 +15,18 @@ for (const region of regions) {
 }`;
 
 function GeometryPreview() {
+  const [landscape, setLandscape] = useState(false);
+  const orientation = landscape ? 'LANDSCAPE' : 'PORTRAIT';
+
   return (
-    <figure
-      className={styles.preview}
-      aria-label="Illustration of a provider containing two content panes, a vertical division, and a camera occlusion. These are illustrative, not live device measurements."
-    >
+    <figure className={styles.preview}>
       <div className={styles.previewHeader}>
         <span className={styles.liveDot} />
         <span>PROVIDER COORDINATES</span>
-        <span className={styles.previewUnit}>pt</span>
+        <span className={styles.previewUnit}>{orientation} · pt</span>
       </div>
-      <div className={styles.device}>
-        <div className={styles.provider}>
+      <div className={`${styles.device} ${landscape ? styles.deviceLandscape : ''}`}>
+        <div className={`${styles.provider} ${landscape ? styles.providerLandscape : ''}`}>
           <span className={styles.origin}>(0, 0)</span>
           <div className={styles.panes}>
             <div className={styles.pane}>
@@ -50,6 +50,17 @@ function GeometryPreview() {
           </div>
         </div>
       </div>
+      <div className={styles.previewControls}>
+        <button
+          type="button"
+          className={styles.rotateButton}
+          onClick={() => setLandscape((current) => !current)}
+          aria-pressed={landscape}
+        >
+          <span aria-hidden="true">↻</span> Rotate to {landscape ? 'portrait' : 'landscape'}
+        </button>
+        <span>Illustrative geometry</span>
+      </div>
       <figcaption className={styles.previewCaption}>
         <span>
           <i className={styles.providerKey} /> Provider
@@ -60,7 +71,7 @@ function GeometryPreview() {
         <span>
           <i className={styles.occlusionKey} /> Occlusion
         </span>
-        <small>Illustrative geometry</small>
+        <small>Illustrative controls and geometry</small>
       </figcaption>
     </figure>
   );
