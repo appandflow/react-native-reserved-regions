@@ -1,0 +1,454 @@
+diff --git a/React/Fabric/AppleEventBeat.cpp b/React/Fabric/AppleEventBeat.cpp
+deleted file mode 100644
+index 4a3d533a0cd..00000000000
+--- a/React/Fabric/AppleEventBeat.cpp
++++ /dev/null
+@@ -1,31 +0,0 @@
+-/*
+- * Copyright (c) Meta Platforms, Inc. and affiliates.
+- *
+- * This source code is licensed under the MIT license found in the
+- * LICENSE file in the root directory of this source tree.
+- */
+-
+-#include "AppleEventBeat.h"
+-
+-#include <react/debug/react_native_assert.h>
+-
+-namespace facebook::react {
+-
+-AppleEventBeat::AppleEventBeat(
+-    std::shared_ptr<OwnerBox> ownerBox,
+-    std::unique_ptr<const RunLoopObserver> uiRunLoopObserver,
+-    RuntimeScheduler& runtimeScheduler)
+-    : EventBeat(std::move(ownerBox), runtimeScheduler),
+-      uiRunLoopObserver_(std::move(uiRunLoopObserver)) {
+-  uiRunLoopObserver_->setDelegate(this);
+-  uiRunLoopObserver_->enable();
+-}
+-
+-void AppleEventBeat::activityDidChange(
+-    const RunLoopObserver::Delegate* delegate,
+-    RunLoopObserver::Activity /*activity*/) const noexcept {
+-  react_native_assert(delegate == this);
+-  induce();
+-}
+-
+-} // namespace facebook::react
+diff --git a/React/Fabric/AppleEventBeat.h b/React/Fabric/AppleEventBeat.h
+index 256e0f0983ad14991f794cf910756a809e19e3bb..4124fc7860aad0a0bd6519ecf97e5264abeb0960 100644
+--- a/React/Fabric/AppleEventBeat.h
++++ b/React/Fabric/AppleEventBeat.h
+@@ -7,10 +7,18 @@
+ 
+ #pragma once
+ 
++#include <functional>
++#include <memory>
++#include <optional>
++
++#import <QuartzCore/QuartzCore.h>
++
+ #include <ReactCommon/RuntimeExecutor.h>
+ #include <react/renderer/core/EventBeat.h>
+ #include <react/utils/RunLoopObserver.h>
+ 
++@class RCTEventBeatFlusherLayer;
++
+ namespace facebook::react {
+ 
+ class RuntimeScheduler;
+@@ -19,13 +27,34 @@ class RuntimeScheduler;
+  * Event beat associated with JavaScript runtime.
+  * The beat is called on `RuntimeExecutor`'s thread induced by the UI thread
+  * event loop.
++ *
++ * A synchronous request made while Core Animation is laying out the current
++ * frame (the run loop observer that induces the beat has already run at that
++ * point) is additionally induced from the display phase of the same commit
++ * cycle, so that its effects are mounted before the frame is presented. The
++ * induce is scheduled on the layer of the requesting view's window — the root
++ * of the tree Core Animation is laying out when the request is made from
++ * layout.
+  */
+ class AppleEventBeat : public EventBeat, public RunLoopObserver::Delegate {
+  public:
++  /*
++   * Resolves the layer of the window containing the view with the given tag.
++   * Called on the main thread; returns nil when the view is not mounted or
++   * not attached to a window.
++   */
++  using WindowLayerResolver = std::function<CALayer *(Tag)>;
++
+   AppleEventBeat(
+       std::shared_ptr<OwnerBox> ownerBox,
+       std::unique_ptr<const RunLoopObserver> uiRunLoopObserver,
+-      RuntimeScheduler &RuntimeScheduler);
++      RuntimeScheduler &RuntimeScheduler,
++      WindowLayerResolver windowLayerResolver);
++
++  ~AppleEventBeat() override;
++
++  using EventBeat::requestSynchronous;
++  void requestSynchronous(Tag tag) const override;
+ 
+ #pragma mark - RunLoopObserver::Delegate
+ 
+@@ -34,6 +63,9 @@ class AppleEventBeat : public EventBeat, public RunLoopObserver::Delegate {
+ 
+  private:
+   std::unique_ptr<const RunLoopObserver> uiRunLoopObserver_;
++  WindowLayerResolver windowLayerResolver_;
++  NSMapTable<CALayer *, RCTEventBeatFlusherLayer *> *layers_;
++  void (^onDisplay_)(void);
+ };
+ 
+ } // namespace facebook::react
+diff --git aReact/Fabric/AppleEventBeat.mm b/React/Fabric/AppleEventBeat.mm
+new file mode 100644
+index 0000000000000000000000000000000000000000..d4ca6a9d5986ce598fa80657b9680b2ecf9dbaa0
+--- /dev/null
++++ b/React/Fabric/AppleEventBeat.mm
+@@ -0,0 +1,124 @@
++/*
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ */
++
++#include "AppleEventBeat.h"
++
++#import <QuartzCore/QuartzCore.h>
++#import <React/RCTUtils.h>
++
++#include <react/debug/react_native_assert.h>
++
++/*
++ * A zero-sized layer whose only purpose is to run a callback during the
++ * display phase of a Core Animation commit. Core Animation processes a commit
++ * as layout → display → (repeat until stable) → commit, so a layer marked as
++ * needing display during the layout phase has its `display` called after the
++ * whole layout pass but before the transaction is committed.
++ */
++@interface RCTEventBeatFlusherLayer : CALayer
++- (instancetype)initWithOnDisplay:(void (^)(void))onDisplay;
++@end
++
++@implementation RCTEventBeatFlusherLayer {
++  void (^_onDisplay)(void);
++}
++
++- (instancetype)initWithOnDisplay:(void (^)(void))onDisplay
++{
++  if (self = [super init]) {
++    _onDisplay = [onDisplay copy];
++    self.frame = CGRectZero;
++  }
++  return self;
++}
++
++- (void)display
++{
++  _onDisplay();
++}
++
++// The layer is not a visual element; never participate in animations.
++- (id<CAAction>)actionForKey:(NSString *)event
++{
++  return nil;
++}
++
++@end
++
++namespace facebook::react {
++
++AppleEventBeat::AppleEventBeat(
++    std::shared_ptr<OwnerBox> ownerBox,
++    std::unique_ptr<const RunLoopObserver> uiRunLoopObserver,
++    RuntimeScheduler &runtimeScheduler,
++    WindowLayerResolver windowLayerResolver)
++    : EventBeat(std::move(ownerBox), runtimeScheduler),
++      uiRunLoopObserver_(std::move(uiRunLoopObserver)),
++      windowLayerResolver_(std::move(windowLayerResolver)),
++      layers_([NSMapTable weakToStrongObjectsMapTable])
++{
++  std::weak_ptr<const void> weakOwner = ownerBox_->owner;
++  onDisplay_ = ^{
++    // The owner (indirectly) retains the event beat; if it is gone, so is
++    // the beat this induces.
++    auto owner = weakOwner.lock();
++    if (!owner) {
++      return;
++    }
++    this->induce();
++  };
++
++  uiRunLoopObserver_->setDelegate(this);
++  uiRunLoopObserver_->enable();
++}
++
++AppleEventBeat::~AppleEventBeat()
++{
++  // The beat can be destroyed on any thread; layer mutations belong on the
++  // main thread. The block only retains the layers, and a display happening
++  // before it executes is made safe by the owner check above.
++  NSMapTable<CALayer *, RCTEventBeatFlusherLayer *> *layers = layers_;
++  RCTExecuteOnMainQueue(^{
++    for (RCTEventBeatFlusherLayer *layer in layers.objectEnumerator) {
++      [layer removeFromSuperlayer];
++    }
++    [layers removeAllObjects];
++  });
++}
++
++void AppleEventBeat::requestSynchronous(Tag tag) const
++{
++  EventBeat::requestSynchronous(tag);
++
++  if (tag == kNoTag || !RCTIsMainQueue()) {
++    return;
++  }
++  CALayer *hostLayer = windowLayerResolver_ ? windowLayerResolver_(tag) : nil;
++  if (hostLayer == nil) {
++    return;
++  }
++  RCTEventBeatFlusherLayer *layer = [layers_ objectForKey:hostLayer];
++  if (layer == nil) {
++    layer = [[RCTEventBeatFlusherLayer alloc] initWithOnDisplay:onDisplay_];
++    [layers_ setObject:layer forKey:hostLayer];
++  }
++  if (layer.superlayer != hostLayer) {
++    [layer removeFromSuperlayer];
++    [hostLayer addSublayer:layer];
++  }
++  [layer setNeedsDisplay];
++}
++
++void AppleEventBeat::activityDidChange(
++    const RunLoopObserver::Delegate *delegate,
++    RunLoopObserver::Activity /*activity*/) const noexcept
++{
++  react_native_assert(delegate == this);
++  induce();
++}
++
++} // namespace facebook::react
+diff --git a/React/Fabric/RCTSurfacePresenter.mm b/React/Fabric/RCTSurfacePresenter.mm
+index 0e4bbe3764638cedd46619604819b5d681359abb..303523b983a63477f4e19bda17a4ce00d3410ee3 100644
+--- a/React/Fabric/RCTSurfacePresenter.mm
++++ b/React/Fabric/RCTSurfacePresenter.mm
+@@ -292,11 +292,16 @@ - (RCTScheduler *)_createScheduler
+   toolbox.runtimeExecutor = runtimeExecutor;
+   toolbox.bridgelessBindingsExecutor = _bridgelessBindingsExecutor;
+ 
++  RCTMountingManager *mountingManager = _mountingManager;
+   toolbox.eventBeatFactory =
+-      [runtimeScheduler](std::shared_ptr<EventBeat::OwnerBox> ownerBox) -> std::unique_ptr<EventBeat> {
++      [runtimeScheduler, mountingManager](std::shared_ptr<EventBeat::OwnerBox> ownerBox) -> std::unique_ptr<EventBeat> {
+     auto runLoopObserver =
+         std::make_unique<const MainRunLoopObserver>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
+-    return std::make_unique<AppleEventBeat>(std::move(ownerBox), std::move(runLoopObserver), *runtimeScheduler);
++    auto windowLayerResolver = [mountingManager](Tag tag) -> CALayer * {
++      return [mountingManager.componentViewRegistry findComponentViewWithTag:tag].window.layer;
++    };
++    return std::make_unique<AppleEventBeat>(
++        std::move(ownerBox), std::move(runLoopObserver), *runtimeScheduler, std::move(windowLayerResolver));
+   };
+ 
+   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
+diff --git a/ReactCommon/react/renderer/core/EventBeat.cpp b/ReactCommon/react/renderer/core/EventBeat.cpp
+index cdb05f4719fdb98037ddc8fa9e4aeeddda24af81..e8cf9ffdda2998ae9829f4528180ba539f261478 100644
+--- a/ReactCommon/react/renderer/core/EventBeat.cpp
++++ b/ReactCommon/react/renderer/core/EventBeat.cpp
+@@ -26,6 +26,10 @@ void EventBeat::request() const {
+ }
+ 
+ void EventBeat::requestSynchronous() const {
++  requestSynchronous(kNoTag);
++}
++
++void EventBeat::requestSynchronous(Tag /*tag*/) const {
+   react_native_assert(
+       beatCallback_ &&
+       "Unexpected state: EventBeat::setBeatCallback was not called before EventBeat::requestSynchronous.");
+@@ -53,7 +57,14 @@ void EventBeat::induce() const {
+   isEventBeatRequested_ = false;
+ 
+   if (isBeatCallbackScheduled_) {
+-    return;
++    // An asynchronous beat is already scheduled but has not run yet. A
++    // synchronous request must not be stranded behind it (it would silently
++    // lose its this-frame guarantee, and the leftover flag would make an
++    // unrelated later beat blocking), so it proceeds and processes the queue
++    // now; the already scheduled beat will simply find an empty queue.
++    if (!isSynchronousRequested_) {
++      return;
++    }
+   }
+ 
+   isBeatCallbackScheduled_ = true;
+diff --git a/ReactCommon/react/renderer/core/EventBeat.h b/ReactCommon/react/renderer/core/EventBeat.h
+index 3740b457e78551723a58a2a55a6b654f9a1f5660..6d0747598a397b7859df21f62d0f84ceab89531b 100644
+--- a/ReactCommon/react/renderer/core/EventBeat.h
++++ b/ReactCommon/react/renderer/core/EventBeat.h
+@@ -7,6 +7,7 @@
+ 
+ #pragma once
+ 
++#include <react/renderer/core/ReactPrimitives.h>
+ #include <atomic>
+ #include <functional>
+ #include <memory>
+@@ -109,7 +110,12 @@ class EventBeat {
+    *                            Both JS and UI thread are
+    *                            blocked.
+    */
+-  virtual void requestSynchronous() const;
++  virtual void requestSynchronous(Tag tag) const;
++
++  /*
++   * Convenience for requesters with no view attribution.
++   */
++  void requestSynchronous() const;
+ 
+   /*
+    * The callback will be executed once a consumer (for example EventQueue)
+diff --git a/ReactCommon/react/renderer/core/EventDispatcher.cpp b/ReactCommon/react/renderer/core/EventDispatcher.cpp
+index 5fa5e6821a514c60b8aa7155362c1c2849d8b2fd..70f9c63ee77ea5655b049b5aff5368e3bee9c82c 100644
+--- a/ReactCommon/react/renderer/core/EventDispatcher.cpp
++++ b/ReactCommon/react/renderer/core/EventDispatcher.cpp
+@@ -37,8 +37,8 @@ void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
+   eventQueue_.enqueueEvent(std::move(rawEvent));
+ }
+ 
+-void EventDispatcher::experimental_flushSync() const {
+-  eventQueue_.experimental_flushSync();
++void EventDispatcher::experimental_flushSync(Tag tag) const {
++  eventQueue_.experimental_flushSync(tag);
+ }
+ 
+ void EventDispatcher::dispatchStateUpdate(
+diff --git a/ReactCommon/react/renderer/core/EventDispatcher.h b/ReactCommon/react/renderer/core/EventDispatcher.h
+index 88a9a953e4234088d567e5c9f040016f95fe9a08..597ee71bd9753407f81b405b135b3ef5ac0de1f1 100644
+--- a/ReactCommon/react/renderer/core/EventDispatcher.h
++++ b/ReactCommon/react/renderer/core/EventDispatcher.h
+@@ -12,6 +12,7 @@
+ #include <react/renderer/core/EventLogger.h>
+ #include <react/renderer/core/EventQueue.h>
+ #include <react/renderer/core/EventQueueProcessor.h>
++#include <react/renderer/core/ReactPrimitives.h>
+ #include <react/renderer/core/StatePipe.h>
+ #include <react/renderer/core/StateUpdate.h>
+ #include <memory>
+@@ -44,7 +45,7 @@ class EventDispatcher {
+   /*
+    * Experimental API exposed to support EventEmitter::experimental_flushSync.
+    */
+-  void experimental_flushSync() const;
++  void experimental_flushSync(Tag tag) const;
+ 
+   /*
+    * Dispatches a raw event with asynchronous batched priority. Before the
+diff --git a/ReactCommon/react/renderer/core/EventEmitter.cpp b/ReactCommon/react/renderer/core/EventEmitter.cpp
+index 2d6ac50e3730645e784a7ca382d8c8f228252336..ee4f386d614d991e4343b2bce130a9429cff7c27 100644
+--- a/ReactCommon/react/renderer/core/EventEmitter.cpp
++++ b/ReactCommon/react/renderer/core/EventEmitter.cpp
+@@ -7,6 +7,8 @@
+ 
+ #include "EventEmitter.h"
+ 
++#include <react/renderer/core/ShadowNodeFamily.h>
++
+ #include <cxxreact/TraceSection.h>
+ #include <folly/dynamic.h>
+ #include <jsi/jsi.h>
+@@ -234,6 +236,13 @@ void EventEmitter::setShadowNodeFamily(
+   shadowNodeFamily_ = std::move(shadowNodeFamily);
+ }
+ 
++Tag EventEmitter::getTag() const {
++  if (auto family = shadowNodeFamily_.lock()) {
++    return family->getTag();
++  }
++  return kNoTag;
++}
++
+ const SharedEventTarget& EventEmitter::getEventTarget() const {
+   return eventTarget_;
+ }
+diff --git a/ReactCommon/react/renderer/core/EventEmitter.h b/ReactCommon/react/renderer/core/EventEmitter.h
+index f3e9a4c334e7f04e5f3d7b112fcd10eaacb0e37b..8ff98e40fb063e805ae152dfd6a658fb0ab8a8f6 100644
+--- a/ReactCommon/react/renderer/core/EventEmitter.h
++++ b/ReactCommon/react/renderer/core/EventEmitter.h
+@@ -75,7 +75,7 @@ class EventEmitter {
+     }
+ 
+     syncFunc();
+-    eventDispatcher->experimental_flushSync();
++    eventDispatcher->experimental_flushSync(getTag());
+   }
+ 
+   /*
+@@ -131,6 +131,12 @@ class EventEmitter {
+  private:
+   friend class UIManagerBinding;
+ 
++  /*
++   * The tag of the view this emitter belongs to, or `kNoTag` once its family
++   * is gone.
++   */
++  Tag getTag() const;
++
+   SharedEventTarget eventTarget_;
+   std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily_;
+ 
+diff --git a/ReactCommon/react/renderer/core/EventQueue.cpp b/ReactCommon/react/renderer/core/EventQueue.cpp
+index 6e99fd71bb7aa4f16da1be6828028e10fb4252fc..27b4ee16df911d57e930e42e11015206cb9a2e72 100644
+--- a/ReactCommon/react/renderer/core/EventQueue.cpp
++++ b/ReactCommon/react/renderer/core/EventQueue.cpp
+@@ -86,8 +86,8 @@ void EventQueue::onEnqueue() const {
+   eventBeat_->request();
+ }
+ 
+-void EventQueue::experimental_flushSync() const {
+-  eventBeat_->requestSynchronous();
++void EventQueue::experimental_flushSync(Tag tag) const {
++  eventBeat_->requestSynchronous(tag);
+ }
+ 
+ void EventQueue::onBeat(jsi::Runtime& runtime) const {
+diff --git a/ReactCommon/react/renderer/core/EventQueue.h b/ReactCommon/react/renderer/core/EventQueue.h
+index f525767478aa700f3b1978a0b4f2dc8c7d3b7730..2f624194f27f614e6c7397404285385b54e92e99 100644
+--- a/ReactCommon/react/renderer/core/EventQueue.h
++++ b/ReactCommon/react/renderer/core/EventQueue.h
+@@ -7,6 +7,7 @@
+ 
+ #pragma once
+ 
++#include <react/renderer/core/ReactPrimitives.h>
+ #include <memory>
+ #include <mutex>
+ #include <vector>
+@@ -61,7 +62,7 @@ class EventQueue {
+   /*
+    * Experimental API exposed to support EventEmitter::experimental_flushSync.
+    */
+-  void experimental_flushSync() const;
++  void experimental_flushSync(Tag tag) const;
+ 
+  protected:
+   /*
+diff --git a/ReactCommon/react/renderer/core/ReactPrimitives.h b/ReactCommon/react/renderer/core/ReactPrimitives.h
+index 84bdffabbf230e587c5abb2c7687f857a4efa60a..7559adb1d9d9349057d5622c16fc8c36453c4fc4 100644
+--- a/ReactCommon/react/renderer/core/ReactPrimitives.h
++++ b/ReactCommon/react/renderer/core/ReactPrimitives.h
+@@ -16,6 +16,8 @@ namespace facebook::react {
+  */
+ using Tag = int32_t;
+ 
++constexpr Tag kNoTag = -1;
++
+ /*
+  * An id of a running Surface instance that is used to refer to the instance.
+  */

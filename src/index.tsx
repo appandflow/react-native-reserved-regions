@@ -1,6 +1,7 @@
 import * as React from 'react';
 import type { ViewProps } from 'react-native';
 import { ReservedRegionsView } from './ReservedRegionsView';
+import type { RegionsChangeEvent } from './ReservedRegionsViewNativeComponent';
 
 /** A rectangle in logical points relative to the nearest ReservedRegionsProvider. */
 export type ReservedRegionFrame = Readonly<{
@@ -31,36 +32,32 @@ export type ReservedRegion =
       frame: ReservedRegionFrame;
     }>;
 
-const ReservedRegionsContext = React.createContext<readonly ReservedRegion[] | null>(null);
+type ReservedRegionsSnapshot = Readonly<{
+  regions: readonly ReservedRegion[];
+  isReady: boolean;
+}>;
+
+const ReservedRegionsContext = React.createContext<ReservedRegionsSnapshot | null>(null);
 
 /** Makes active reserved regions available to descendants in provider coordinates. */
 export function ReservedRegionsProvider({ children, ...props }: ViewProps): React.JSX.Element {
-  const [regions, setRegions] = React.useState<readonly ReservedRegion[]>([]);
+  const [snapshot, setSnapshot] = React.useState<ReservedRegionsSnapshot>({ regions: [], isReady: false });
+  const onRegionsChange = React.useCallback((event: { nativeEvent: RegionsChangeEvent }) => {
+    const regions = event.nativeEvent.regions.flatMap((region): ReservedRegion[] => {
+      if (region.kind === 'division') {
+        return [{ kind: 'division', frame: region.frame, occludesContent: region.occludesContent }];
+      }
+      if (region.kind === 'occlusion') {
+        return [{ kind: 'occlusion', frame: region.frame }];
+      }
+      return [];
+    });
+    setSnapshot({ regions, isReady: true });
+  }, []);
 
   return (
-    <ReservedRegionsContext.Provider value={regions}>
-      <ReservedRegionsView
-        {...props}
-        onRegionsChange={(event) => {
-          setRegions(
-            event.nativeEvent.regions.flatMap((region): ReservedRegion[] => {
-              if (region.kind === 'division') {
-                return [
-                  {
-                    kind: 'division' as const,
-                    frame: region.frame,
-                    occludesContent: region.occludesContent,
-                  },
-                ];
-              }
-              if (region.kind === 'occlusion') {
-                return [{ kind: 'occlusion' as const, frame: region.frame }];
-              }
-              return [];
-            }),
-          );
-        }}
-      >
+    <ReservedRegionsContext.Provider value={snapshot}>
+      <ReservedRegionsView {...props} onRegionsChange={onRegionsChange}>
         {children}
       </ReservedRegionsView>
     </ReservedRegionsContext.Provider>
@@ -69,9 +66,21 @@ export function ReservedRegionsProvider({ children, ...props }: ViewProps): Reac
 
 /** Returns active regions reported by the nearest ReservedRegionsProvider. */
 export function useReservedRegions(): readonly ReservedRegion[] {
-  const regions = React.useContext(ReservedRegionsContext);
-  if (regions === null) {
+  const snapshot = React.useContext(ReservedRegionsContext);
+  if (snapshot === null) {
     throw new Error('useReservedRegions must be used inside ReservedRegionsProvider');
   }
-  return regions;
+  return snapshot.regions;
+}
+
+/**
+ * Whether the nearest provider has reported its first measurement, including an empty
+ * result. Remains true for that provider's lifetime; does not imply platform support.
+ */
+export function useReservedRegionsReady(): boolean {
+  const snapshot = React.useContext(ReservedRegionsContext);
+  if (snapshot === null) {
+    throw new Error('useReservedRegionsReady must be used inside ReservedRegionsProvider');
+  }
+  return snapshot.isReady;
 }

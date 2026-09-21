@@ -12,6 +12,8 @@ internal class RegionsChangeEvent(
 ) : Event<RegionsChangeEvent>(surfaceId, viewTag) {
   override fun getEventName() = NAME
 
+  override fun experimental_isSynchronous() = true
+
   override fun getEventData(): WritableMap {
     val payload = Arguments.createMap()
     val regionArray = Arguments.createArray()

@@ -6,6 +6,7 @@ import android.os.Build
 import android.view.ViewTreeObserver
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
+import androidx.window.WindowSdkExtensions
 import androidx.window.java.layout.WindowInfoTrackerCallbackAdapter
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
@@ -21,21 +22,33 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
   private var tracker: WindowInfoTrackerCallbackAdapter? = null
   private val layoutInfoConsumer = Consumer<WindowLayoutInfo> { info ->
     foldingFeatures = info.displayFeatures.filterIsInstance<FoldingFeature>()
-    updateRegions()
+    foldingFeaturesReady = true
+    invalidate()
   }
   private var foldingFeatures: List<FoldingFeature> = emptyList()
+  private var foldingFeaturesReady = false
   private var lastRegions: List<ReservedRegion>? = null
   private var onRegionsChange: RegionsChangeHandler? = null
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
     viewTreeObserver.addOnPreDrawListener(this)
+    foldingFeatures = emptyList()
+    foldingFeaturesReady = false
+    lastRegions = null
     val activity = (context as? ThemedReactContext)?.currentActivity
     if (activity != null) {
-      tracker = WindowInfoTrackerCallbackAdapter(WindowInfoTracker.getOrCreate(context))
+      val windowTracker = WindowInfoTracker.getOrCreate(context)
+      if (WindowSdkExtensions.getInstance().extensionVersion >= 9) {
+        foldingFeatures = windowTracker.getCurrentWindowLayoutInfo(activity)
+          .displayFeatures.filterIsInstance<FoldingFeature>()
+        foldingFeaturesReady = true
+      }
+      tracker = WindowInfoTrackerCallbackAdapter(windowTracker)
       tracker?.addWindowLayoutInfoListener(activity, ContextCompat.getMainExecutor(context), layoutInfoConsumer)
+    } else {
+      foldingFeaturesReady = true
     }
-    updateRegions()
   }
 
   override fun onDetachedFromWindow() {
@@ -52,12 +65,13 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
 
   internal fun setOnRegionsChangeHandler(handler: RegionsChangeHandler) {
     onRegionsChange = handler
-    updateRegions()
+    lastRegions = null
+    invalidate()
   }
 
   private fun updateRegions() {
     val handler = onRegionsChange ?: return
-    if (!isAttachedToWindow || width == 0 || height == 0) return
+    if (!isAttachedToWindow || !foldingFeaturesReady || width == 0 || height == 0) return
 
     val windowLocation = IntArray(2)
     getLocationInWindow(windowLocation)

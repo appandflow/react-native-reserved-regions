@@ -7,10 +7,13 @@ Give the provider the bounds of the content you want to inspect. Descendants rea
 
 ```tsx
 import { Text, View } from 'react-native';
-import { ReservedRegionsProvider, useReservedRegions } from 'react-native-reserved-regions';
+import { ReservedRegionsProvider, useReservedRegions, useReservedRegionsReady } from 'react-native-reserved-regions';
 
 function RegionSummary() {
   const regions = useReservedRegions();
+  const isReady = useReservedRegionsReady();
+
+  if (!isReady) return <Text>Measuring reserved regions…</Text>;
 
   return (
     <View>
@@ -40,9 +43,15 @@ The provider accepts standard React Native `View` props, including `style` and `
 
 ## First render and updates
 
-The hook initially returns `[]`. Native measurements update it after layout, and subsequent native changes rerender consumers. An empty list also means no regions are reported for the provider, or the platform has no supported region source. There is no separate loading or availability flag.
+`useReservedRegions()` initially returns `[]`; `useReservedRegionsReady()` initially returns `false`. The first measurement updates both together, including when the result is empty. Readiness then stays true for that provider's lifetime. A newly mounted provider starts pending. Use readiness to distinguish waiting for an initial result from a measured empty array.
 
-Calling the hook outside a provider throws. Nested providers each establish a coordinate space; a consumer always reads the nearest one.
+Native measurements arrive during iOS layout or Android pre-draw. Android uses the current WindowManager result when extension version 9 or later is available; otherwise it waits for the first layout-info callback before publishing. Unsupported backends report an empty result. Without an Activity, Android cannot query folding features and reports only any available display cutouts. There is no timeout that turns missing data into readiness.
+
+Give the provider nonzero dimensions even while rendering a placeholder. A provider whose size depends entirely on children that are hidden until readiness can otherwise remain pending. The unsupported-platform fallback reports a known empty result after mounting. Readiness means an initial result is available, not that the device supports reserved regions or that future geometry cannot change.
+
+Native events request synchronous React delivery and suppress unchanged region snapshots. The first visible frame still depends on React Native scheduling and when the platform supplies its geometry; synchronous dispatch alone is not a first-frame guarantee.
+
+Calling either hook outside a provider throws. Nested providers each establish a coordinate space; a consumer always reads the nearest one.
 
 ## Decide what to avoid
 

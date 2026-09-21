@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ReservedRegionsProvider, useReservedRegions } from 'react-native-reserved-regions';
+import { ReservedRegionsProvider, useReservedRegions, useReservedRegionsReady } from 'react-native-reserved-regions';
 
 const layouts = ['Full screen', 'Inset 24', 'Content box'] as const;
 type Layout = (typeof layouts)[number];
 
 function RegionInspector() {
   const regions = useReservedRegions();
+  const isReady = useReservedRegionsReady();
   const insets = useSafeAreaInsets();
   const frame = useSafeAreaFrame();
 
@@ -55,7 +56,10 @@ function RegionInspector() {
           left {insets.left.toFixed(1)}
         </Text>
 
-        {regions.length === 0 ? (
+        <Text style={styles.metric}>Measurement: {isReady ? 'Ready' : 'Pending'}</Text>
+        {!isReady ? (
+          <Text style={styles.empty}>Waiting for the first measurement</Text>
+        ) : regions.length === 0 ? (
           <Text style={styles.empty}>No active reserved regions</Text>
         ) : (
           regions.map((region, index) => (

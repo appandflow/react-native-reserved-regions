@@ -106,3 +106,23 @@ pnpm run docs:build
 
 Docusaurus serves the site locally; building it does not deploy it. Preview the
 landing page and API documentation at desktop and mobile widths after UI edits.
+
+## React Native event-beat test patch
+
+The example installs React Native `0.88.0-rc.1` with
+`patches/react-native@0.88.0-rc.1.patch` through `pnpm-workspace.yaml`.
+The patch carries the native source changes from
+[upstream PR #58530](https://github.com/react/react-native/pull/58530), commit
+`c73ef0f22a655ed18b626a6373ef69a63912adeb`. It also adds that proposal's
+`kNoTag` prerequisite and adapts two header include contexts to RC1. It excludes
+upstream test and API-snapshot files. The upstream proposal is unmerged.
+
+Run `pnpm install --frozen-lockfile` to reproduce it. The example Podfile sets
+`RCT_USE_PREBUILT_RNCORE=0`: precompiled React Native binaries do not contain these
+source changes. Reinstall pods and rebuild the native app after changing the
+patch. Prebuilt third-party React Native dependencies may still be used.
+
+The patch is an example dependency for testing layout-time synchronous delivery;
+it is not bundled into the library's npm package or applied to consuming apps.
+Verify first-visible-frame behavior with a recorded native run. Passing package
+tests or compiling the synchronous event code does not establish that behavior.

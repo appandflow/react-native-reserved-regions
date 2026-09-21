@@ -1,7 +1,6 @@
 #import "ReservedRegionsView.h"
 
 #import <react/renderer/components/ReservedRegionsViewSpec/ComponentDescriptors.h>
-#import <react/renderer/components/ReservedRegionsViewSpec/EventEmitters.h>
 #import <react/renderer/components/ReservedRegionsViewSpec/Props.h>
 #import <react/renderer/components/ReservedRegionsViewSpec/RCTComponentViewHelpers.h>
 
@@ -36,12 +35,18 @@ using namespace facebook::react;
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];
-  [self updateRegions];
+  [self setNeedsLayout];
+}
+
+- (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter
+{
+  [super updateEventEmitter:eventEmitter];
+  [self setNeedsLayout];
 }
 
 - (void)updateRegions
 {
-  if (self.window == nil || !_eventEmitter) {
+  if (self.window == nil || !_eventEmitter || CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
     return;
   }
 
@@ -67,16 +72,25 @@ using namespace facebook::react;
   }
   _currentRegions = [regions copy];
 
-  ReservedRegionsViewEventEmitter::OnRegionsChange event;
+  auto regionPayloads = folly::dynamic::array();
   for (NSDictionary *region in regions) {
     CGRect frame = [region[@"frame"] CGRectValue];
-    event.regions.push_back({
-        [region[@"kind"] UTF8String],
-        {frame.origin.x, frame.origin.y, frame.size.width, frame.size.height},
-        false,
-    });
+    regionPayloads.push_back(folly::dynamic::object
+        ("kind", [region[@"kind"] UTF8String])
+        ("frame", folly::dynamic::object
+            ("x", frame.origin.x)
+            ("y", frame.origin.y)
+            ("width", frame.size.width)
+            ("height", frame.size.height))
+        ("occludesContent", false));
   }
-  std::static_pointer_cast<ReservedRegionsViewEventEmitter const>(_eventEmitter)->onRegionsChange(event);
+  auto eventEmitter = _eventEmitter;
+  eventEmitter->experimental_flushSync([eventEmitter, regions = std::move(regionPayloads)]() mutable {
+    eventEmitter->dispatchEvent(
+        "regionsChange",
+        folly::dynamic::object("regions", std::move(regions)),
+        RawEvent::Category::Discrete);
+  });
 }
 
 - (void)prepareForRecycle
