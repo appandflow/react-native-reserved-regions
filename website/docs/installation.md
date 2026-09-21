@@ -7,12 +7,10 @@ description: Install the early preview and check native platform requirements.
 
 ## Release status
 
-This library is an **early preview**. These docs describe repository source, currently version `0.1.0-alpha.1`. The published `next` tag currently points to `0.1.0-alpha.0`; it does not include every change documented here. In particular, the current Android implementation uses display cutout bounding rectangles, which corrects the initial alpha's cutout geometry.
-
-To try the current implementation, [run the example from source](./example.md). To install the published preview:
+`0.1.0-alpha.1` is the next release candidate. The command below applies after publication is verified; until then, [run the example from source](./example.md). The published `0.1.0-alpha.0` has the provider and region hook, but lacks the readiness hook, synchronous delivery and current cutout fixes.
 
 ```sh
-npm install react-native-reserved-regions@next
+npm install react-native-reserved-regions@0.1.0-alpha.1
 ```
 
 ## Requirements

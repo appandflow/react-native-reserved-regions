@@ -5,7 +5,7 @@ Provider-scoped display divisions and occlusions for React Native's New Architec
 ## Requirements
 
 - React Native New Architecture (Fabric)
-- iOS 27.1 for UIKit reserved regions; earlier iOS versions report an empty list
+- iOS 27.1 SDK and runtime for UIKit reserved regions; older SDKs compile out observation and older runtimes report an empty list
 - Android 7.0 (API 24) or newer; folding features require a device supported by Jetpack WindowManager
 
 The example app uses React Native 0.88.0-rc.1.
@@ -13,8 +13,11 @@ Its iOS target adopts `UISceneDelegate` because the RC template currently crashe
 
 ## Installation
 
+`0.1.0-alpha.1` is the functional release candidate. Install the explicit version
+once publication is verified; until then, run the repository example.
+
 ```sh
-npm install react-native-reserved-regions@next
+npm install react-native-reserved-regions@0.1.0-alpha.1
 ```
 
 On iOS, install pods in your app's `ios` directory. Android links automatically through React Native autolinking.
@@ -72,6 +75,14 @@ A division splits the available display. `occludesContent` tells you whether con
 - Android observes Jetpack WindowManager `FoldingFeature` values and Android display cutout rectangles. A separating or fully occluding fold becomes a division; `OcclusionType.FULL` sets `occludesContent` to `true`. Display cutouts become occlusions. [FoldingFeature reference](https://developer.android.com/reference/androidx/window/layout/FoldingFeature), [WindowInsets reference](https://developer.android.com/reference/android/view/WindowInsets)
 
 The library reports geometry and does not reposition content. Normal safe area insets, system bars, and keyboard insets remain separate concerns.
+
+## Measurement timing
+
+Native events request synchronous delivery. Android measures after Fabric mounting
+and also observes pre-draw changes. The iOS example tests same-frame delivery with
+an [upstream React Native event-beat patch](docs/workflow.md#react-native-event-beat-test-patch).
+That example patch is not installed into consuming apps. Readiness indicates a
+completed measurement, not a universal first-frame guarantee.
 
 ## Development
 
