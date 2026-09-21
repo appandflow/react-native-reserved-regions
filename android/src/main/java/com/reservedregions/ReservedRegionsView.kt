@@ -11,14 +11,20 @@ import androidx.window.java.layout.WindowInfoTrackerCallbackAdapter
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
 import androidx.window.layout.WindowLayoutInfo
+import com.facebook.react.bridge.UIManager
+import com.facebook.react.bridge.UIManagerListener
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.ThemedReactContext
+import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.views.view.ReactViewGroup
 import kotlin.math.max
 import kotlin.math.min
 
 internal typealias RegionsChangeHandler = (ReservedRegionsView, List<ReservedRegion>) -> Unit
 
-class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeObserver.OnPreDrawListener {
+@OptIn(UnstableReactNativeAPI::class)
+class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeObserver.OnPreDrawListener, UIManagerListener {
+  private var uiManager: UIManager? = null
   private var tracker: WindowInfoTrackerCallbackAdapter? = null
   private val layoutInfoConsumer = Consumer<WindowLayoutInfo> { info ->
     foldingFeatures = info.displayFeatures.filterIsInstance<FoldingFeature>()
@@ -30,8 +36,23 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
   private var lastRegions: List<ReservedRegion>? = null
   private var onRegionsChange: RegionsChangeHandler? = null
 
+  override fun willDispatchViewUpdates(uiManager: UIManager) {}
+
+  override fun willMountItems(uiManager: UIManager) {}
+
+  override fun didScheduleMountItems(uiManager: UIManager) {}
+
+  override fun didDispatchMountItems(uiManager: UIManager) {}
+
+  override fun didMountItems(uiManager: UIManager) {
+    // Fabric installs event emitters after layout; its event beat runs before pre-draw.
+    updateRegions()
+  }
+
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
+    uiManager = UIManagerHelper.getUIManagerForReactTag(UIManagerHelper.getReactContext(this), id)
+    uiManager?.addUIManagerEventListener(this)
     viewTreeObserver.addOnPreDrawListener(this)
     foldingFeatures = emptyList()
     foldingFeaturesReady = false
@@ -52,6 +73,8 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
   }
 
   override fun onDetachedFromWindow() {
+    uiManager?.removeUIManagerEventListener(this)
+    uiManager = null
     tracker?.removeWindowLayoutInfoListener(layoutInfoConsumer)
     tracker = null
     viewTreeObserver.removeOnPreDrawListener(this)
