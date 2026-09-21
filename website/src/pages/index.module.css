@@ -78,29 +78,34 @@
 .previewUnit {
   margin-left: auto;
 }
+.deviceStage {
+  display: grid;
+  height: 460px;
+  margin: 25px 0;
+  place-items: center;
+}
 .device {
-  width: min(270px, calc(100% - 30px));
-  margin: 25px auto;
+  box-sizing: border-box;
+  width: min(300px, calc(100% - 48px));
+  aspect-ratio: 669 / 951;
+  margin: 0;
   padding: 13px;
   border: 2px solid var(--rr-border);
   border-radius: 23px;
   background: var(--ifm-background-color);
+  transform-origin: center;
+  transition: transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 .deviceLandscape {
-  width: auto;
-  margin: 25px;
+  transform: rotate(90deg) scale(0.78);
 }
 .provider {
-  height: 350px;
+  height: 100%;
   border: 1.5px solid #527ef0;
   border-radius: 12px;
   position: relative;
   background-image: radial-gradient(var(--rr-border) 0.7px, transparent 0.7px);
   background-size: 12px 12px;
-  transition: height 360ms ease;
-}
-.providerLandscape {
-  height: 190px;
 }
 .origin {
   position: absolute;
@@ -115,24 +120,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 42px;
-}
-.providerLandscape .panes {
-  inset: 18px 18px 48px;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 12px;
-}
-.providerLandscape .stubTitle {
-  height: 6px;
-  margin-bottom: 7px;
-}
-.providerLandscape .stub {
-  height: 3px;
-  margin-bottom: 4px;
-}
-.providerLandscape .tile {
-  height: 26px;
-  margin: 7px 0;
 }
 .pane {
   min-width: 0;
@@ -176,19 +163,6 @@
   font: 0.62rem var(--ifm-font-family-monospace);
   color: #8a4516;
 }
-.providerLandscape .fold {
-  top: 40%;
-  right: 0;
-  bottom: auto;
-  left: 0;
-  border-top: 2px solid #d57839;
-  border-left: 0;
-}
-.providerLandscape .fold span {
-  top: 0;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
 .cutout {
   position: absolute;
   top: 11px;
@@ -210,18 +184,12 @@
   font: 0.62rem var(--ifm-font-family-monospace);
   color: #6936a7;
 }
-.providerLandscape .cutout {
+.deviceLandscape .origin {
   top: auto;
-  right: 12px;
-  bottom: 11px;
-  left: auto;
-  transform: none;
-}
-.providerLandscape .cutout span {
-  top: auto;
-  right: 22px;
-  bottom: 0;
-  transform: none;
+  bottom: 10px;
+  left: 10px;
+  transform: rotate(-90deg);
+  transform-origin: left bottom;
 }
 .previewControls {
   display: flex;
@@ -374,8 +342,8 @@
   .referenceLink {
     font-size: 0.82rem;
   }
-  .device {
-    margin: 20px;
+  .deviceStage .device {
+    margin: 0;
   }
   .concepts {
     gap: 25px;
@@ -402,6 +370,9 @@
   .preview {
     max-width: 520px;
     width: 100%;
+  }
+  .deviceStage {
+    height: 390px;
   }
   .concepts {
     grid-template-columns: 1fr;
@@ -438,8 +409,8 @@
     font-size: 0.9rem;
     padding: 12px 16px;
   }
-  .device {
-    margin: 15px;
+  .deviceStage .device {
+    margin: 0;
     padding: 10px;
   }
   .previewCaption {
@@ -453,7 +424,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .provider {
+  .device {
     transition: none;
   }
 }

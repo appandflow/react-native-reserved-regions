@@ -14,39 +14,65 @@ for (const region of regions) {
   const { x, y, width, height } = region.frame;
 }`;
 
+const portraitFrame = { width: 669, height: 951 };
+const portraitRegions = {
+  division: { x: 334.5, y: 0, width: 0, height: 951 },
+  occlusion: { x: 573, y: 42, width: 54, height: 54 },
+};
+
+function rotateClockwise({ x, y, width, height }) {
+  return {
+    x: portraitFrame.height - y - height,
+    y: x,
+    width: height,
+    height: width,
+  };
+}
+
+function formatFrame({ x, y, width, height }) {
+  return `${x}, ${y} · ${width} × ${height} pt`;
+}
+
 function GeometryPreview() {
   const [landscape, setLandscape] = useState(false);
   const orientation = landscape ? 'LANDSCAPE' : 'PORTRAIT';
+  const division = landscape ? rotateClockwise(portraitRegions.division) : portraitRegions.division;
+  const occlusion = landscape ? rotateClockwise(portraitRegions.occlusion) : portraitRegions.occlusion;
 
   return (
-    <figure className={styles.preview}>
+    <figure
+      className={styles.preview}
+      aria-label="Illustrative provider geometry controls. The region coordinates are example values, not live device measurements."
+    >
       <div className={styles.previewHeader}>
         <span className={styles.liveDot} />
         <span>PROVIDER COORDINATES</span>
         <span className={styles.previewUnit}>{orientation} · pt</span>
       </div>
-      <div className={`${styles.device} ${landscape ? styles.deviceLandscape : ''}`}>
-        <div className={`${styles.provider} ${landscape ? styles.providerLandscape : ''}`}>
-          <span className={styles.origin}>(0, 0)</span>
-          <div className={styles.panes}>
-            <div className={styles.pane}>
-              <div className={styles.stubTitle} />
-              <div className={styles.stub} />
-              <div className={styles.stub} />
-              <div className={styles.tile} />
+      <div className={styles.deviceStage}>
+        <div className={`${styles.device} ${landscape ? styles.deviceLandscape : ''}`}>
+          <div className={styles.provider}>
+            <span className={styles.origin}>(0, 0)</span>
+            <div className={styles.panes}>
+              <div className={styles.pane}>
+                <div className={styles.stubTitle} />
+                <div className={styles.stub} />
+                <div className={styles.stub} />
+                <div className={styles.tile} />
+              </div>
+              <div className={styles.pane}>
+                <div className={styles.stubTitle} />
+                <div className={styles.tile} />
+                <div className={styles.stub} />
+                <div className={styles.stub} />
+              </div>
             </div>
-            <div className={styles.pane}>
-              <div className={styles.stubTitle} />
-              <div className={styles.tile} />
-              <div className={styles.stub} />
-              <div className={styles.stub} />
+            <div className={styles.fold}>
+              <span>division</span>
             </div>
-          </div>
-          <div className={styles.fold}>
-            <span>division</span>
-          </div>
-          <div className={styles.cutout}>
-            <span>occlusion</span>
+            <div className={styles.cutout}>
+              <span>occlusion</span>
+            </div>
           </div>
         </div>
       </div>
@@ -58,15 +84,15 @@ function GeometryPreview() {
       </div>
       <figcaption className={styles.previewCaption}>
         <span>
-          <i className={styles.providerKey} /> Provider
+          <i className={styles.providerKey} /> Provider {landscape ? '951 × 669 pt' : '669 × 951 pt'}
         </span>
         <span>
-          <i className={styles.divisionKey} /> Division
+          <i className={styles.divisionKey} /> Division {formatFrame(division)}
         </span>
         <span>
-          <i className={styles.occlusionKey} /> Occlusion
+          <i className={styles.occlusionKey} /> Occlusion {formatFrame(occlusion)}
         </span>
-        <small>Illustrative controls and geometry</small>
+        <small>Illustrative controls and geometry, not live device measurements</small>
       </figcaption>
     </figure>
   );
