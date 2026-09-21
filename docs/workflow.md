@@ -76,6 +76,33 @@ clipping on Android, empty results outside a region, and line-shaped divisions.
 On Android, use a foldable emulator to exercise native folding features and a
 cutout to exercise occlusions. Record the emulator posture and runtime.
 
+### Automated Android check
+
+```sh
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+E2E_ANDROID_SERIAL=emulator-5554 pnpm run e2e:android
+```
+
+`e2e/android.mjs` builds and installs the example release variant, so the run does
+not need a Metro server. It puts the emulator in device state 1 with the corner
+display-cutout overlay enabled, waits for the app to become launchable, and cold
+launches it. On the Full screen layout it asserts that the measurement reports
+Ready, that there is exactly one division and that the division is a zero-width
+line whose x is between 40 and 60 percent of the provider width and whose height
+matches the provider height within 2 points, and that there is exactly one
+occlusion whose frame sits in the provider top-right corner. It then taps Content
+box and asserts Ready, one remaining division and no occlusion. A screenshot of
+each asserted state is written to the ignored `e2e/artifacts/` directory, and a
+failure prints the accessibility snapshot before exiting non-zero. The posture
+and cutout overlay are left in place afterwards, because disabling the overlay
+restarts the Android framework.
+
+`E2E_ANDROID_SERIAL` is required when more than one device is attached. Set
+`E2E_SKIP_BUILD=1` to reuse the installed APK. The emulator needs a hinge, because
+a device without one has no device state 1. The same script runs in the opt-in
+`e2e-android` GitHub Actions workflow, which is triggered manually or by adding the
+`e2e-android` label to a pull request.
+
 Use the device ID reported by Stim for app automation and screenshots. Some Duo
 capture tools default to the inactive display; enumerate displays with
 `xcrun simctl io <udid> enumerate` and choose the active display explicitly.

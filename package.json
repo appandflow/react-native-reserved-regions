@@ -58,6 +58,7 @@
     "lint:fix": "oxlint --fix .",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
+    "e2e:android": "node e2e/android.mjs",
     "docs:build": "pnpm --filter reserved-regions-docs build",
     "docs:start": "pnpm --filter reserved-regions-docs start"
   },
