@@ -34,6 +34,7 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
   private var foldingFeatures: List<FoldingFeature> = emptyList()
   private var foldingFeaturesReady = false
   private var lastRegions: List<ReservedRegion>? = null
+  private var awaitingFirstMount = true
   private var onRegionsChange: RegionsChangeHandler? = null
 
   override fun willDispatchViewUpdates(uiManager: UIManager) {}
@@ -45,13 +46,17 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
   override fun didDispatchMountItems(uiManager: UIManager) {}
 
   override fun didMountItems(uiManager: UIManager) {
-    // Fabric installs event emitters after layout; its event beat runs before pre-draw.
-    updateRegions()
+    if (awaitingFirstMount) updateRegions()
   }
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
     uiManager = UIManagerHelper.getUIManagerForReactTag(UIManagerHelper.getReactContext(this), id)
+    awaitingFirstMount = true
+    // React Native's FabricMountingManager.cpp applies layout before installing a view's event
+    // emitter inside one mount batch, so onLayout cannot dispatch a synchronous event on first
+    // mount; didMountItems is the earliest point after the emitter exists and before the event
+    // beat. It runs for every mount batch in the app, so it is removed after the first delivery.
     uiManager?.addUIManagerEventListener(this)
     viewTreeObserver.addOnPreDrawListener(this)
     foldingFeatures = emptyList()
@@ -81,6 +86,11 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
     super.onDetachedFromWindow()
   }
 
+  override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+    super.onLayout(changed, left, top, right, bottom)
+    if (!awaitingFirstMount) updateRegions()
+  }
+
   override fun onPreDraw(): Boolean {
     updateRegions()
     return true
@@ -92,9 +102,9 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
     invalidate()
   }
 
-  private fun updateRegions() {
-    val handler = onRegionsChange ?: return
-    if (!isAttachedToWindow || !foldingFeaturesReady || width == 0 || height == 0) return
+  private fun updateRegions(): Boolean {
+    val handler = onRegionsChange ?: return false
+    if (!isAttachedToWindow || !foldingFeaturesReady || width == 0 || height == 0) return false
 
     val windowLocation = IntArray(2)
     getLocationInWindow(windowLocation)
@@ -116,10 +126,14 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
       }
     }
 
-    if (regions != lastRegions) {
-      lastRegions = regions
-      handler(this, regions)
+    if (regions == lastRegions) return false
+    lastRegions = regions
+    handler(this, regions)
+    if (awaitingFirstMount) {
+      awaitingFirstMount = false
+      uiManager?.removeUIManagerEventListener(this)
     }
+    return true
   }
 
   private fun clippedFrame(bounds: Rect, originX: Int, originY: Int): Rect? {

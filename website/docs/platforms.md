@@ -56,10 +56,13 @@ The fallback component renders a React Native `View` and reports a known empty r
 
 ## Measurement timing
 
-Android measures after Fabric mounts the view, when its event emitter is available
-and before React Native's event beat. Pre-draw observation also catches ancestor
-scrolling and native window changes. Those later measurements can reach React in
-a subsequent frame. Older WindowManager extensions may await their first callback.
+Android takes its first measurement after Fabric mounts the view, when its event
+emitter is available and before React Native's event beat. Later React relayouts
+are measured in the Android layout pass, so their event reaches React at the beat
+that follows the same mount batch. Pre-draw observation covers everything else,
+including ancestor scrolling and native window changes; those measurements can
+reach React in a subsequent frame. Older WindowManager extensions may await their
+first callback.
 
 The iOS example uses an unmerged React Native event-beat patch to test layout-time
 synchronous delivery. The published package does not patch an application's React
