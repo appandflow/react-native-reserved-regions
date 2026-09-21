@@ -30,7 +30,21 @@ function rotateClockwise({ x, y, width, height }) {
 }
 
 function formatFrame({ x, y, width, height }) {
-  return `${x}, ${y} · ${width} × ${height} pt`;
+  return `x:${x} y:${y} w:${width} h:${height} pt`;
+}
+
+function RegionLabel({ kind, frame }) {
+  return (
+    <span className={styles.regionLabel}>
+      <b>{kind}</b>
+      <i>
+        x:{frame.x} y:{frame.y}
+      </i>
+      <i>
+        w:{frame.width} h:{frame.height} pt
+      </i>
+    </span>
+  );
 }
 
 function GeometryPreview() {
@@ -38,6 +52,13 @@ function GeometryPreview() {
   const orientation = landscape ? 'LANDSCAPE' : 'PORTRAIT';
   const division = landscape ? rotateClockwise(portraitRegions.division) : portraitRegions.division;
   const occlusion = landscape ? rotateClockwise(portraitRegions.occlusion) : portraitRegions.occlusion;
+  const geometryStyle = {
+    '--division-x': `${(portraitRegions.division.x / portraitFrame.width) * 100}%`,
+    '--cutout-x': `${(portraitRegions.occlusion.x / portraitFrame.width) * 100}%`,
+    '--cutout-y': `${(portraitRegions.occlusion.y / portraitFrame.height) * 100}%`,
+    '--cutout-width': `${(portraitRegions.occlusion.width / portraitFrame.width) * 100}%`,
+    '--cutout-height': `${(portraitRegions.occlusion.height / portraitFrame.height) * 100}%`,
+  };
 
   return (
     <figure
@@ -51,8 +72,7 @@ function GeometryPreview() {
       </div>
       <div className={styles.deviceStage}>
         <div className={`${styles.device} ${landscape ? styles.deviceLandscape : ''}`}>
-          <div className={styles.provider}>
-            <span className={styles.origin}>(0, 0)</span>
+          <div className={styles.provider} style={geometryStyle}>
             <div className={styles.panes}>
               <div className={styles.pane}>
                 <div className={styles.stubTitle} />
@@ -68,10 +88,10 @@ function GeometryPreview() {
               </div>
             </div>
             <div className={styles.fold}>
-              <span>division</span>
+              <RegionLabel kind="division" frame={division} />
             </div>
             <div className={styles.cutout}>
-              <span>occlusion</span>
+              <RegionLabel kind="occlusion" frame={occlusion} />
             </div>
           </div>
         </div>
