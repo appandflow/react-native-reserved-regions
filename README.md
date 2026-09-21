@@ -13,8 +13,7 @@ Its iOS target adopts `UISceneDelegate` because the RC template currently crashe
 
 ## Installation
 
-`0.1.0-alpha.2` is the functional release candidate. Install the explicit version
-once publication is verified; until then, run the repository example.
+`0.1.0-alpha.2` is the published functional prerelease.
 
 ```sh
 npm install react-native-reserved-regions@0.1.0-alpha.2

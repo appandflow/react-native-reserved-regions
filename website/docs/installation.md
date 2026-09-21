@@ -1,13 +1,15 @@
 ---
 title: Installation
-description: Install the early preview and check native platform requirements.
+description: Install the alpha prerelease and check native platform requirements.
 ---
 
 `react-native-reserved-regions` reports display divisions and occlusions relative to a React Native view. Use it to inspect folds, hinges, camera cutouts, and supported system-reserved areas before choosing where to place content.
 
 ## Release status
 
-`0.1.0-alpha.2` is the next release candidate. The command below applies after publication is verified; until then, [run the example from source](./example.md). The published `0.1.0-alpha.0` has the provider and region hook, but lacks the readiness hook, synchronous delivery and current cutout fixes.
+`0.1.0-alpha.2` is the published prerelease. It includes the readiness hook,
+synchronous delivery, and the current cutout fixes. The repository [example](./example.md)
+remains useful for testing native behavior on supported devices and simulators.
 
 ```sh
 npm install react-native-reserved-regions@0.1.0-alpha.2
