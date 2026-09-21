@@ -1,4 +1,4 @@
-package com.reservedregions
+package com.appandflow.reservedregions
 
 import android.content.Context
 import android.graphics.Rect
