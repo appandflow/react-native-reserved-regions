@@ -26,7 +26,7 @@ if (@available(iOS 27.1, *)) {
 
 Building with an older SDK compiles out reserved-region observation. Such a build returns empty arrays even on an iOS 27.1 device. A build with a supporting SDK also returns empty arrays on an older runtime. Rebuild with the newer SDK to enable the APIs; a device OS update alone is insufficient.
 
-Region measurements refresh when the provider lays out or moves into a window. Inactive regions are not exposed.
+Region measurements refresh when the provider lays out, moves into a window, or receives a hinge update through `UIHingeInteraction` on iOS 27.1 or later. Inactive regions are not exposed.
 
 To test iPhone Duo behavior, use an Xcode and simulator runtime that include it. Automated iOS fold-transition coverage has not yet been established.
 
