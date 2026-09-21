@@ -1,4 +1,4 @@
-package com.reservedregions
+package com.appandflow.reservedregions
 
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.module.annotations.ReactModule

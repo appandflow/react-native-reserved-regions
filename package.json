@@ -105,7 +105,7 @@
     "type": "all",
     "jsSrcsDir": "src",
     "android": {
-      "javaPackageName": "com.reservedregions"
+      "javaPackageName": "com.appandflow.reservedregions"
     },
     "ios": {
       "components": {

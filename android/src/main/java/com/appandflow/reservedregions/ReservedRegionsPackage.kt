@@ -1,4 +1,4 @@
-package com.reservedregions
+package com.appandflow.reservedregions
 
 import com.facebook.react.BaseReactPackage
 import com.facebook.react.bridge.NativeModule

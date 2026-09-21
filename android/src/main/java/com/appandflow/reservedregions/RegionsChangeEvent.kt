@@ -1,4 +1,4 @@
-package com.reservedregions
+package com.appandflow.reservedregions
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
