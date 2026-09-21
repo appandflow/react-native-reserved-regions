@@ -1,13 +1,8 @@
 #!/usr/bin/env node
 /**
- * Android end-to-end check for the example app.
- *
- * Builds and installs the `release` variant because that variant embeds the JavaScript
- * bundle, so the run needs no Metro server, and the React Native template signs it with
- * the checked-in `example/android/app/debug.keystore`, so it needs no signing setup.
- *
- * Requires `adb` and `agent-device` on PATH and an Android SDK location that Gradle can
- * resolve (`ANDROID_HOME`).
+ * Android end-to-end check for the example app. Installs the release variant, which embeds the
+ * JavaScript bundle and is signed with the checked-in debug keystore, so no Metro server is needed.
+ * Requires adb and agent-device on PATH and ANDROID_HOME for Gradle.
  *
  * Environment:
  *   E2E_ANDROID_SERIAL  adb serial to target; required when more than one device is attached.
@@ -195,7 +190,11 @@ try {
   process.exitCode = 1;
 } finally {
   if (serial) {
-    run('agent-device', ['close', '--session', session], { env: deviceEnv() });
+    const closed = run('agent-device', ['close', '--session', session], { env: deviceEnv() });
+    if (closed.status !== 0) {
+      console.error(`\nagent-device close failed:\n${closed.stdout ?? ''}${closed.stderr ?? ''}`);
+      process.exitCode = 1;
+    }
     run('adb', ['-s', serial, 'shell', 'am', 'force-stop', packageId]);
   }
 }

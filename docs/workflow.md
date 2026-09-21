@@ -93,7 +93,9 @@ matches the provider height within 2 points, and that there is exactly one
 occlusion whose frame sits in the provider top-right corner. It then taps Content
 box and asserts Ready, one remaining division and no occlusion. A screenshot of
 each asserted state is written to the ignored `e2e/artifacts/` directory, and a
-failure prints the accessibility snapshot before exiting non-zero.
+failure prints the accessibility snapshot before exiting non-zero. The posture
+and cutout overlay are left in place afterwards, because disabling the overlay
+restarts the Android framework.
 
 `E2E_ANDROID_SERIAL` is required when more than one device is attached. Set
 `E2E_SKIP_BUILD=1` to reuse the installed APK. The emulator needs a hinge, because
