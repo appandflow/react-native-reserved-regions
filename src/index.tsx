@@ -84,3 +84,8 @@ export function useReservedRegionsReady(): boolean {
   }
   return snapshot.isReady;
 }
+
+/** Renders children after the nearest provider reports its first measurement. */
+export function ReservedRegionsGate({ children }: React.PropsWithChildren): React.ReactNode {
+  return useReservedRegionsReady() ? children : null;
+}

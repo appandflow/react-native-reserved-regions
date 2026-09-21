@@ -15,6 +15,20 @@ A native view that supplies active reserved regions to descendants. It accepts R
 
 Each provider maintains its own measurements. A nested provider replaces the context for its descendants.
 
+## ReservedRegionsGate
+
+Available on `main`; not included in `0.1.0-alpha.2`.
+
+```ts
+function ReservedRegionsGate(props: { children?: React.ReactNode }): React.ReactNode;
+```
+
+Renders `null` until the nearest provider has completed its first measurement,
+then renders `children`, including for an empty result. It adds no native view and
+does not suspend. Throws outside a provider, like `useReservedRegionsReady()`.
+Keep the measured view mounted and sized outside the gate. See
+[performance and first render](./performance.md) for placement and tradeoffs.
+
 ## useReservedRegions
 
 ```ts

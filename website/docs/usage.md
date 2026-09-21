@@ -90,6 +90,13 @@ Keeping the animated subtree mounted avoided this failure in the tested case;
 apps that gate its mount need to apply the patch, rebuild the native app, and
 validate it themselves.
 
+## Mounting content after measurement
+
+The optional [`ReservedRegionsGate`](./performance.md#gate-content-that-needs-the-first-measurement)
+can delay mounting descendants until the provider is ready. The default provider
+continues to render children immediately. See [performance and first render](./performance.md)
+for placement, sizing, and animation considerations.
+
 ## Decide what to avoid
 
 - A `division` describes a display split. Content can still be visible across it when `occludesContent` is `false`; your layout may benefit from placing controls on either side.

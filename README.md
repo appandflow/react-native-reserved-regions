@@ -110,6 +110,10 @@ Keeping the animated subtree mounted avoided this failure in the tested case;
 apps that gate its mount need to apply the patch, rebuild the native app, and
 validate it themselves.
 
+The [performance guide](https://appandflow.github.io/react-native-reserved-regions/docs/performance)
+explains provider placement and optional readiness gating. `ReservedRegionsGate`
+is available on `main` for the next release; it is not part of `0.1.0-alpha.2`.
+
 ## Development
 
 ```sh

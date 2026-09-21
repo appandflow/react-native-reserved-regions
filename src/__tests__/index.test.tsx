@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { beforeEach, expect, it, jest } from '@jest/globals';
 import { act, create } from 'react-test-renderer';
-import { ReservedRegionsProvider, useReservedRegions, useReservedRegionsReady, type ReservedRegion } from '../index';
+import {
+  ReservedRegionsGate,
+  ReservedRegionsProvider,
+  useReservedRegions,
+  useReservedRegionsReady,
+  type ReservedRegion,
+} from '../index';
 import type { RegionsChangeEvent } from '../ReservedRegionsViewNativeComponent';
 
 type Handler = (event: { nativeEvent: RegionsChangeEvent }) => void;
@@ -52,6 +58,53 @@ it('distinguishes pending from a measured empty result and keeps readiness after
   expect(observed.at(-1)).toEqual({ regions: [], isReady: true });
   expect(observed.every((snapshot) => snapshot.isReady || snapshot.regions.length === 0)).toBe(true);
   await act(() => renderer.unmount());
+});
+
+it('delays descendants until ready and resets when the provider remounts', async () => {
+  const onMount = jest.fn();
+  const onUnmount = jest.fn();
+
+  function Child() {
+    React.useEffect(() => {
+      onMount();
+      return () => {
+        onUnmount();
+      };
+    }, []);
+
+    return null;
+  }
+
+  const child = <Child />;
+  const tree = (key: number) => (
+    <ReservedRegionsProvider key={key}>
+      <ReservedRegionsGate>{child}</ReservedRegionsGate>
+    </ReservedRegionsProvider>
+  );
+
+  let renderer: ReturnType<typeof create>;
+  await act(() => {
+    renderer = create(tree(0));
+  });
+  expect(onMount).not.toHaveBeenCalled();
+
+  await act(() => mockHandlers.get('default')?.({ nativeEvent: { regions: [] } }));
+  expect(onMount).toHaveBeenCalledTimes(1);
+
+  await act(() => mockHandlers.get('default')?.({ nativeEvent: { regions: [division] } }));
+  expect(onMount).toHaveBeenCalledTimes(1);
+  expect(onUnmount).not.toHaveBeenCalled();
+
+  await act(() => {
+    renderer!.update(tree(1));
+  });
+  expect(onUnmount).toHaveBeenCalledTimes(1);
+  expect(onMount).toHaveBeenCalledTimes(1);
+
+  await act(() => mockHandlers.get('default')?.({ nativeEvent: { regions: [] } }));
+  expect(onMount).toHaveBeenCalledTimes(2);
+
+  await act(() => renderer!.unmount());
 });
 
 it('reports provider-relative region kinds and occlusion flags in the first ready snapshot', async () => {
