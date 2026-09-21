@@ -13,11 +13,11 @@ Its iOS target adopts `UISceneDelegate` because the RC template currently crashe
 
 ## Installation
 
-`0.1.0-alpha.1` is the functional release candidate. Install the explicit version
+`0.1.0-alpha.2` is the functional release candidate. Install the explicit version
 once publication is verified; until then, run the repository example.
 
 ```sh
-npm install react-native-reserved-regions@0.1.0-alpha.1
+npm install react-native-reserved-regions@0.1.0-alpha.2
 ```
 
 On iOS, install pods in your app's `ios` directory. Android links automatically through React Native autolinking.
