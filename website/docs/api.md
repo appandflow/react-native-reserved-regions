@@ -21,7 +21,17 @@ Each provider maintains its own measurements. A nested provider replaces the con
 function useReservedRegions(): readonly ReservedRegion[];
 ```
 
-Returns regions from the nearest provider, initially `[]`. Throws if there is no provider. The list has no separate readiness flag and no guaranteed stable IDs or ordering. Treat both the array and its values as read-only.
+Returns regions from the nearest provider, initially `[]`. Throws if there is no provider. The list has no guaranteed stable IDs or ordering. Treat both the array and its values as read-only.
+
+## useReservedRegionsReady
+
+```ts
+function useReservedRegionsReady(): boolean;
+```
+
+Returns whether the nearest provider has reported its first measurement. Initially `false`, then `true` even when the measured region array is empty. Regions and readiness update together. It stays true for that provider's lifetime and resets for a newly mounted provider. Throws if there is no provider.
+
+Readiness does not indicate hardware support or guarantee first-visible-frame timing. An unsupported platform reports a known empty result. A provider without laid-out bounds remains pending; Android also waits for its first WindowManager result when a synchronous query is unavailable.
 
 ## ReservedRegionFrame
 

@@ -22,10 +22,12 @@ On iOS, install pods in your app's `ios` directory. Android links automatically 
 ## Usage
 
 ```tsx
-import { ReservedRegionsProvider, useReservedRegions } from 'react-native-reserved-regions';
+import { ReservedRegionsProvider, useReservedRegions, useReservedRegionsReady } from 'react-native-reserved-regions';
 
 function Screen() {
   const regions = useReservedRegions();
+  const isReady = useReservedRegionsReady();
+  if (!isReady) return null;
   return regions.map((region, index) => {
     if (region.kind === 'division') {
       console.log(region.frame, region.occludesContent);
@@ -45,7 +47,7 @@ export default function App() {
 }
 ```
 
-`useReservedRegions()` returns an empty array until the native view reports its first layout and when no active regions overlap the provider. It must be called beneath a `ReservedRegionsProvider`. Each region's `frame` uses logical points relative to that provider's top-left corner. A nested provider establishes its own coordinate space. The provider accepts standard React Native `View` props and should cover the content whose reserved regions you want to inspect.
+`useReservedRegions()` always returns an array, initially `[]`. `useReservedRegionsReady()` is initially `false` and becomes `true` with the first measurement, including an empty result. It stays true for that provider’s lifetime. Unsupported platforms report a known empty result; readiness does not indicate hardware support or guarantee first-frame timing. Both hooks must be called beneath a `ReservedRegionsProvider`. Each region's `frame` uses logical points relative to that provider's top-left corner. A nested provider establishes its own coordinate space. The provider accepts standard React Native `View` props and should cover the content whose reserved regions you want to inspect.
 
 The public type is a tagged union:
 
