@@ -22,6 +22,17 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const ReservedRegionsViewProps>();
     _props = defaultProps;
+#if defined(__IPHONE_27_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_1
+    if (@available(iOS 27.1, *)) {
+      // UIKit posts no reserved-region change notification, so hinge updates schedule the re-query.
+      __weak __typeof(self) weakSelf = self;
+      UIHingeInteraction *hingeInteraction =
+          [[UIHingeInteraction alloc] initWithUpdateHandler:^(UIHingeInteraction *, UIHingeInteractionUpdate *) {
+            [weakSelf setNeedsLayout];
+          }];
+      [self addInteraction:hingeInteraction];
+    }
+#endif
   }
   return self;
 }
