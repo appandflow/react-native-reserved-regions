@@ -79,18 +79,19 @@
   margin-left: auto;
 }
 .device {
-  margin: 25px;
+  width: min(270px, calc(100% - 30px));
+  margin: 25px auto;
   padding: 13px;
   border: 2px solid var(--rr-border);
   border-radius: 23px;
   background: var(--ifm-background-color);
-  transition: padding 360ms ease;
 }
 .deviceLandscape {
-  padding: 13px;
+  width: auto;
+  margin: 25px;
 }
 .provider {
-  height: 262px;
+  height: 350px;
   border: 1.5px solid #527ef0;
   border-radius: 12px;
   position: relative;
@@ -116,10 +117,10 @@
   gap: 42px;
 }
 .providerLandscape .panes {
-  inset: 48px 18px 18px;
+  inset: 18px 18px 48px;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 .providerLandscape .stubTitle {
   height: 6px;
@@ -176,7 +177,7 @@
   color: #8a4516;
 }
 .providerLandscape .fold {
-  top: 53%;
+  top: 40%;
   right: 0;
   bottom: auto;
   left: 0;
@@ -210,15 +211,17 @@
   color: #6936a7;
 }
 .providerLandscape .cutout {
-  top: 8px;
-  right: auto;
-  left: 50%;
-  transform: translateX(-50%);
+  top: auto;
+  right: 12px;
+  bottom: 11px;
+  left: auto;
+  transform: none;
 }
 .providerLandscape .cutout span {
-  top: 22px;
-  right: 50%;
-  transform: translateX(50%);
+  top: auto;
+  right: 22px;
+  bottom: 0;
+  transform: none;
 }
 .previewControls {
   display: flex;
@@ -450,7 +453,6 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .device,
   .provider {
     transition: none;
   }

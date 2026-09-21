@@ -51,12 +51,7 @@ function GeometryPreview() {
         </div>
       </div>
       <div className={styles.previewControls}>
-        <button
-          type="button"
-          className={styles.rotateButton}
-          onClick={() => setLandscape((current) => !current)}
-          aria-pressed={landscape}
-        >
+        <button type="button" className={styles.rotateButton} onClick={() => setLandscape((current) => !current)}>
           <span aria-hidden="true">↻</span> Rotate to {landscape ? 'portrait' : 'landscape'}
         </button>
         <span>Illustrative geometry</span>
