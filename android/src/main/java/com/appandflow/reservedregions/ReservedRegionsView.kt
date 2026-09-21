@@ -46,11 +46,7 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
   override fun didDispatchMountItems(uiManager: UIManager) {}
 
   override fun didMountItems(uiManager: UIManager) {
-    if (!awaitingFirstMount) return
-    if (updateRegions()) {
-      awaitingFirstMount = false
-      uiManager.removeUIManagerEventListener(this)
-    }
+    if (awaitingFirstMount) updateRegions()
   }
 
   override fun onAttachedToWindow() {
@@ -133,6 +129,10 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
     if (regions == lastRegions) return false
     lastRegions = regions
     handler(this, regions)
+    if (awaitingFirstMount) {
+      awaitingFirstMount = false
+      uiManager?.removeUIManagerEventListener(this)
+    }
     return true
   }
 

@@ -1,10 +1,10 @@
-# Android one-shot mount listener — September 21, 2026
+# Android one-shot mount listener, September 21, 2026
 
 ## Change under test
 
 `ReservedRegionsView` still registers itself as a global `UIManagerListener` in
-`onAttachedToWindow`, but it now removes that listener as soon as `didMountItems`
-has delivered the first region snapshot, and it measures later React relayouts in
+`onAttachedToWindow`, but it now removes that listener as soon as the first region snapshot has been
+delivered from any measurement path, and it measures later React relayouts in
 an `onLayout` override instead. `onLayout` deliberately does nothing until the
 first mount snapshot has been delivered: measuring earlier would set `lastRegions`
 and suppress the synchronous emit in `didMountItems`, and Fabric would then deliver
