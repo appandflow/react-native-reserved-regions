@@ -13,8 +13,6 @@ Its iOS target adopts `UISceneDelegate` because the RC template currently crashe
 
 ## Installation
 
-`0.1.0` is the first stable release.
-
 ```sh
 npm install react-native-reserved-regions
 ```
