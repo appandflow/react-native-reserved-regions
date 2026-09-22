@@ -7,12 +7,12 @@ description: Install the alpha prerelease and check native platform requirements
 
 ## Release status
 
-`0.1.0-alpha.2` is the published prerelease. It includes the readiness hook,
-synchronous delivery, and the current cutout fixes. The repository [example](./example.md)
+`0.1.0-alpha.3` includes optional readiness gating, hinge-driven iOS region refreshes,
+synchronous delivery, and cutout support. The repository [example](./example.md)
 remains useful for testing native behavior on supported devices and simulators.
 
 ```sh
-npm install react-native-reserved-regions@0.1.0-alpha.2
+npm install react-native-reserved-regions@0.1.0-alpha.3
 ```
 
 ## Requirements
