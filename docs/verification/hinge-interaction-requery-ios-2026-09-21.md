@@ -65,6 +65,10 @@ before the screenshots listed above were taken.
 
 ## A posture change could not be exercised
 
+The [September 22 follow-up](dynamic-fold-ios-2026-09-22.md) closes this gap using
+agent-device 0.21.12. The findings below describe the tooling available during
+this original run.
+
 No supported way to change the fold posture of an iPhone Duo simulator was
 found.
 
