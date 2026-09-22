@@ -1,18 +1,19 @@
 ---
 title: Installation
-description: Install the alpha prerelease and check native platform requirements.
+description: Install the package and check native platform requirements.
 ---
 
 `react-native-reserved-regions` reports display divisions and occlusions relative to a React Native view. Use it to inspect folds, hinges, camera cutouts, and supported system-reserved areas before choosing where to place content.
 
 ## Release status
 
-`0.1.0-alpha.3` includes optional readiness gating, hinge-driven iOS region refreshes,
-synchronous delivery, and cutout support. The repository [example](./example.md)
+`0.1.0` is the first stable release. It includes optional readiness gating,
+hinge-driven iOS region refreshes, and cutout support. Native events request
+synchronous delivery; see [measurement timing](./performance.md) for its limits. The repository [example](./example.md)
 remains useful for testing native behavior on supported devices and simulators.
 
 ```sh
-npm install react-native-reserved-regions@0.1.0-alpha.3
+npm install react-native-reserved-regions
 ```
 
 ## Requirements

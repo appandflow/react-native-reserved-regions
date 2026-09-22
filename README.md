@@ -13,10 +13,10 @@ Its iOS target adopts `UISceneDelegate` because the RC template currently crashe
 
 ## Installation
 
-`0.1.0-alpha.3` is an alpha release; its API may still change.
+`0.1.0` is the first stable release.
 
 ```sh
-npm install react-native-reserved-regions@0.1.0-alpha.3
+npm install react-native-reserved-regions
 ```
 
 On iOS, install pods in your app's `ios` directory. Android links automatically through React Native autolinking.

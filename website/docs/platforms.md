@@ -28,7 +28,9 @@ Building with an older SDK compiles out reserved-region observation. Such a buil
 
 Region measurements refresh when the provider lays out, moves into a window, or receives a hinge update through `UIHingeInteraction` on iOS 27.1 or later. Inactive regions are not exposed.
 
-To test iPhone Duo behavior, use an Xcode and simulator runtime that include it. Automated iOS fold-transition coverage has not yet been established.
+To test iPhone Duo behavior, use an Xcode and simulator runtime that include it. The 0.1.0 simulator verification exercised closed, partially open, and flat states,
+including removal and restoration of a division without changing provider bounds.
+Physical Duo hardware and multiple-window behavior remain unverified.
 
 [Apple: adaptive layouts on iPhone Duo](https://developer.apple.com/videos/play/tech-talks/111463/)
 
