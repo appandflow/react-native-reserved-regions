@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import CodeBlock from '@theme/CodeBlock';
@@ -14,53 +14,105 @@ for (const region of regions) {
   const { x, y, width, height } = region.frame;
 }`;
 
+const portraitFrame = { width: 669, height: 951 };
+const portraitRegions = {
+  division: { x: 334.5, y: 0, width: 0, height: 951 },
+  occlusion: { x: 573, y: 42, width: 54, height: 54 },
+};
+
+function rotateClockwise({ x, y, width, height }) {
+  return {
+    x: portraitFrame.height - y - height,
+    y: x,
+    width: height,
+    height: width,
+  };
+}
+
+function formatFrame({ x, y, width, height }) {
+  return `x:${x} y:${y} w:${width} h:${height} pt`;
+}
+
+function RegionLabel({ kind, frame }) {
+  return (
+    <span className={styles.regionLabel}>
+      <b>{kind}</b>
+      <i>
+        x:{frame.x} y:{frame.y}
+      </i>
+      <i>
+        w:{frame.width} h:{frame.height} pt
+      </i>
+    </span>
+  );
+}
+
 function GeometryPreview() {
+  const [landscape, setLandscape] = useState(false);
+  const orientation = landscape ? 'LANDSCAPE' : 'PORTRAIT';
+  const division = landscape ? rotateClockwise(portraitRegions.division) : portraitRegions.division;
+  const occlusion = landscape ? rotateClockwise(portraitRegions.occlusion) : portraitRegions.occlusion;
+  const geometryStyle = {
+    '--division-x': `${(portraitRegions.division.x / portraitFrame.width) * 100}%`,
+    '--cutout-x': `${(portraitRegions.occlusion.x / portraitFrame.width) * 100}%`,
+    '--cutout-y': `${(portraitRegions.occlusion.y / portraitFrame.height) * 100}%`,
+    '--cutout-width': `${(portraitRegions.occlusion.width / portraitFrame.width) * 100}%`,
+    '--cutout-height': `${(portraitRegions.occlusion.height / portraitFrame.height) * 100}%`,
+  };
+
   return (
     <figure
       className={styles.preview}
-      aria-label="Illustration of a provider containing two content panes, a vertical division, and a camera occlusion. These are illustrative, not live device measurements."
+      aria-label="Illustrative provider geometry controls. The region coordinates are example values, not live device measurements."
     >
       <div className={styles.previewHeader}>
         <span className={styles.liveDot} />
         <span>PROVIDER COORDINATES</span>
-        <span className={styles.previewUnit}>pt</span>
+        <span className={styles.previewUnit}>{orientation} · pt</span>
       </div>
-      <div className={styles.device}>
-        <div className={styles.provider}>
-          <span className={styles.origin}>(0, 0)</span>
-          <div className={styles.panes}>
-            <div className={styles.pane}>
-              <div className={styles.stubTitle} />
-              <div className={styles.stub} />
-              <div className={styles.stub} />
-              <div className={styles.tile} />
+      <div className={styles.deviceStage}>
+        <div className={`${styles.device} ${landscape ? styles.deviceLandscape : ''}`}>
+          <div className={styles.provider} style={geometryStyle}>
+            <div className={styles.panes}>
+              <div className={styles.pane}>
+                <div className={styles.stubTitle} />
+                <div className={styles.stub} />
+                <div className={styles.stub} />
+                <div className={styles.tile} />
+              </div>
+              <div className={styles.pane}>
+                <div className={styles.stubTitle} />
+                <div className={styles.tile} />
+                <div className={styles.stub} />
+                <div className={styles.stub} />
+              </div>
             </div>
-            <div className={styles.pane}>
-              <div className={styles.stubTitle} />
-              <div className={styles.tile} />
-              <div className={styles.stub} />
-              <div className={styles.stub} />
+            <div className={styles.fold}>
+              <RegionLabel kind="division" frame={division} />
             </div>
-          </div>
-          <div className={styles.fold}>
-            <span>division</span>
-          </div>
-          <div className={styles.cutout}>
-            <span>occlusion</span>
+            <div className={styles.cutout}>
+              <RegionLabel kind="occlusion" frame={occlusion} />
+            </div>
           </div>
         </div>
       </div>
+      <div className={styles.previewControls}>
+        <button type="button" className={styles.rotateButton} onClick={() => setLandscape((current) => !current)}>
+          <span aria-hidden="true">↻</span> Rotate to {landscape ? 'portrait' : 'landscape'}
+        </button>
+        <span>Illustrative geometry</span>
+      </div>
       <figcaption className={styles.previewCaption}>
         <span>
-          <i className={styles.providerKey} /> Provider
+          <i className={styles.providerKey} /> Provider {landscape ? '951 × 669 pt' : '669 × 951 pt'}
         </span>
         <span>
-          <i className={styles.divisionKey} /> Division
+          <i className={styles.divisionKey} /> Division {formatFrame(division)}
         </span>
         <span>
-          <i className={styles.occlusionKey} /> Occlusion
+          <i className={styles.occlusionKey} /> Occlusion {formatFrame(occlusion)}
         </span>
-        <small>Illustrative geometry</small>
+        <small>Illustrative controls and geometry, not live device measurements</small>
       </figcaption>
     </figure>
   );
