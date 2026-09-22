@@ -26,14 +26,6 @@ export default {
   ],
   themeConfig: {
     colorMode: { defaultMode: 'light', respectPrefersColorScheme: true },
-    announcementBar: {
-      id: 'early-preview',
-      content:
-        'Alpha prerelease · These docs follow repository source. <a href="/react-native-reserved-regions/docs/installation/">Check release status</a>.',
-      isCloseable: false,
-      backgroundColor: '#eaf0ff',
-      textColor: '#21356b',
-    },
     navbar: {
       title: 'Reserved Regions',
       logo: { alt: '', src: 'img/mark.svg' },
