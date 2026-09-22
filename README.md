@@ -13,10 +13,10 @@ Its iOS target adopts `UISceneDelegate` because the RC template currently crashe
 
 ## Installation
 
-`0.1.0-alpha.2` is the published functional prerelease.
+`0.1.0-alpha.3` is an alpha release; its API may still change.
 
 ```sh
-npm install react-native-reserved-regions@0.1.0-alpha.2
+npm install react-native-reserved-regions@0.1.0-alpha.3
 ```
 
 On iOS, install pods in your app's `ios` directory. Android links automatically through React Native autolinking.
@@ -112,7 +112,7 @@ validate it themselves.
 
 The [performance guide](https://appandflow.github.io/react-native-reserved-regions/docs/performance)
 explains provider placement and optional readiness gating. `ReservedRegionsGate`
-is available on `main` for the next release; it is not part of `0.1.0-alpha.2`.
+is included starting with `0.1.0-alpha.3`.
 
 ## Development
 

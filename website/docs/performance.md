@@ -18,10 +18,10 @@ can render before its reserved regions are known.
 
 ## Gate content that needs the first measurement
 
-:::note Unreleased API
+:::note Version availability
 
-`ReservedRegionsGate` is available on `main` and is not included in `0.1.0-alpha.2`.
-In that release, use `useReservedRegionsReady()` and return `null` from your own
+`ReservedRegionsGate` is available starting with `0.1.0-alpha.3`.
+On earlier releases, use `useReservedRegionsReady()` and return `null` from your own
 gate component until it is ready.
 
 :::
