@@ -28,7 +28,7 @@ These are provider coordinates, not screen coordinates. A provider can occupy a 
 
 ## Native geometry
 
-On Android, the library translates window-relative folding features and screen-relative cutouts into provider coordinates, then clips them to the provider bounds. Regions outside the provider are omitted. A fold can have zero width or height and still be meaningful; do not discard line-shaped regions.
+On Android, the library translates window-relative folding features and cutouts into provider coordinates, then clips them to the provider bounds. Regions outside the provider are omitted. A fold can have zero width or height and still be meaningful; do not discard line-shaped regions.
 
 On iOS, UIKit performs the view-scoped query. The library forwards the returned frames without an additional clipping pass. UIKit frames can include interaction margins around an obstruction, so they should not be interpreted as exact physical hardware outlines. See [Apple's reserved regions overview](https://developer.apple.com/videos/play/tech-talks/111463/).
 
