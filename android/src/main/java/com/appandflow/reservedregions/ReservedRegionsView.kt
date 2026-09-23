@@ -35,6 +35,7 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
   private var foldingFeaturesReady = false
   private var lastRegions: List<ReservedRegion>? = null
   private var awaitingFirstMount = true
+  private var hasDispatchedRegions = false
   private var onRegionsChange: RegionsChangeHandler? = null
 
   override fun willDispatchViewUpdates(uiManager: UIManager) {}
@@ -124,7 +125,8 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
 
     if (regions == lastRegions) return false
     lastRegions = regions
-    handler(this, regions, awaitingFirstMount)
+    handler(this, regions, !hasDispatchedRegions)
+    hasDispatchedRegions = true
     if (awaitingFirstMount) {
       awaitingFirstMount = false
       uiManager?.removeUIManagerEventListener(this)
