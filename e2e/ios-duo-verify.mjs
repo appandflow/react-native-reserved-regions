@@ -16,7 +16,7 @@ const results = [];
 function run(args, { allowFailure = false } = {}) {
   const result = spawnSync('agent-device', [...args, '--platform', 'ios', '--udid', udid, '--session', session], {
     encoding: 'utf8',
-    timeout: 300_000,
+    timeout: args[0] === 'open' ? 300_000 : 120_000,
   });
   const out = `${result.stdout ?? ''}${result.stderr ?? ''}`;
   console.log(`$ agent-device ${args.join(' ')} -> ${result.status}\n${out.slice(0, 4000)}`);

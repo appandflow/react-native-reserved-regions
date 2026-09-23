@@ -57,7 +57,19 @@ jobs:
           xcrun simctl install "$udid" example/build/Build/Products/Release-iphonesimulator/ReservedRegionsExample.app
           xcrun simctl io "$udid" enumerate || true
       - run: npm install -g agent-device@0.21.12
+      - name: Launch without agent-device
+        timeout-minutes: 5
+        run: |
+          mkdir -p e2e/artifacts
+          xcrun simctl launch "$DUO_UDID" reservedregions.example
+          sleep 10
+          xcrun simctl io "$DUO_UDID" screenshot e2e/artifacts/00-simctl-launch.png || true
+          xcrun simctl terminate "$DUO_UDID" reservedregions.example || true
+      - name: Prepare agent-device runner
+        timeout-minutes: 20
+        run: agent-device prepare ios-runner --platform ios --udid "$DUO_UDID" --timeout 1080000 --json
       - name: Drive postures and layouts
+        timeout-minutes: 25
         run: node e2e/ios-duo-verify.mjs
       - name: Collect native probe log
         if: always()
@@ -65,6 +77,9 @@ jobs:
           mkdir -p e2e/artifacts
           xcrun simctl spawn "$DUO_UDID" log show --last 60m --style compact --predicate 'eventMessage CONTAINS "RRPROBE"' | tee e2e/artifacts/rrprobe.log
           xcrun simctl io "$DUO_UDID" enumerate > e2e/artifacts/displays.txt 2>&1 || true
+          mkdir -p e2e/artifacts/agent-device-logs
+          find ~/.agent-device -name '*.log' -size -20M -exec cp {} e2e/artifacts/agent-device-logs/ \; 2>/dev/null || true
+          find ~/.agent-device -maxdepth 3 > e2e/artifacts/agent-device-logs/tree.txt 2>&1 || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
