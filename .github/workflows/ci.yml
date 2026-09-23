@@ -76,16 +76,20 @@ jobs:
       - uses: ruby/setup-ruby@a0102e0972be65f351c307e2d64b9314a57c8073 # v1
         with:
           ruby-version: '3.4.8'
+          bundler-cache: true
+          working-directory: example
       - id: xcode
         run: echo "build=$(xcodebuild -version | awk '/Build version/ { print $3 }')" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: example/build/CompilationCache.noindex
-          key: ios-cas-${{ steps.xcode.outputs.build }}-${{ hashFiles('pnpm-lock.yaml', 'example/ios/Podfile.lock') }}-${{ hashFiles('ios/**', 'src/**', 'example/ios/**', '*.podspec') }}
+          key: ios-cas-${{ steps.xcode.outputs.build }}-${{ hashFiles('pnpm-lock.yaml', 'example/ios/Podfile.lock') }}-${{ hashFiles('ios/**', 'src/**', 'example/ios/**', '!example/ios/Pods/**', '*.podspec') }}
           restore-keys: ios-cas-${{ steps.xcode.outputs.build }}-${{ hashFiles('pnpm-lock.yaml', 'example/ios/Podfile.lock') }}-
-      - run: |
-          bundle install
-          bundle exec pod install --project-directory=ios
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: example/ios/Pods
+          key: ios-pods-${{ hashFiles('example/ios/Podfile.lock') }}
+      - run: bundle exec pod install --project-directory=ios
         working-directory: example
       - run: >-
           xcodebuild -workspace ios/ReservedRegionsExample.xcworkspace
