@@ -4,17 +4,11 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
-import com.facebook.react.uimanager.ViewGroupManager
-import com.facebook.react.viewmanagers.ReservedRegionsViewManagerInterface
-import com.facebook.react.viewmanagers.ReservedRegionsViewManagerDelegate
+import com.facebook.react.views.view.ReactViewGroup
+import com.facebook.react.views.view.ReactViewManager
 
 @ReactModule(name = ReservedRegionsViewManager.NAME)
-class ReservedRegionsViewManager : ViewGroupManager<ReservedRegionsView>(),
-  ReservedRegionsViewManagerInterface<ReservedRegionsView> {
-  private val delegate = ReservedRegionsViewManagerDelegate(this)
-
-  override fun getDelegate() = delegate
-
+class ReservedRegionsViewManager : ReactViewManager() {
   override fun getName() = NAME
 
   override fun createViewInstance(context: ThemedReactContext) = ReservedRegionsView(context)
@@ -22,9 +16,9 @@ class ReservedRegionsViewManager : ViewGroupManager<ReservedRegionsView>(),
   override fun getExportedCustomDirectEventTypeConstants() =
     mutableMapOf(RegionsChangeEvent.NAME to mutableMapOf("registrationName" to "onRegionsChange"))
 
-  override fun addEventEmitters(reactContext: ThemedReactContext, view: ReservedRegionsView) {
+  override fun addEventEmitters(reactContext: ThemedReactContext, view: ReactViewGroup) {
     super.addEventEmitters(reactContext, view)
-    view.setOnRegionsChangeHandler { source, regions ->
+    (view as ReservedRegionsView).setOnRegionsChangeHandler { source, regions ->
       val sourceContext = source.context as ReactContext
       UIManagerHelper.getEventDispatcherForReactTag(sourceContext, source.id)
         ?.dispatchEvent(RegionsChangeEvent(UIManagerHelper.getSurfaceId(sourceContext), source.id, regions))
