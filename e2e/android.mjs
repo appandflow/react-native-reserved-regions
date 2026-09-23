@@ -137,7 +137,8 @@ function assertFullScreen(screen) {
   expect(divisions.length === 1, `full screen: exactly one division, got ${divisions.length}`);
   const [division] = divisions;
   const ratio = division.x / width;
-  expect(division.width === 0, `full screen: division width is 0.0, got ${division.width.toFixed(1)}`);
+  // The 7.6in Foldable emulator profile reports a 1 px hinge (hw.sensor.hinge.areas=884-0-1-2208).
+  expect(division.width <= 1, `full screen: division width ${division.width.toFixed(1)} is at most 1 point`);
   expect(
     ratio >= 0.4 && ratio <= 0.6,
     `full screen: division x ${division.x.toFixed(1)} is ${(ratio * 100).toFixed(1)}% of provider width ${width.toFixed(1)}`,

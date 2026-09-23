@@ -88,9 +88,10 @@ E2E_ANDROID_SERIAL=emulator-5554 pnpm run e2e:android
 not need a Metro server. It puts the emulator in device state 1 with the corner
 display-cutout overlay enabled, waits for the app to become launchable, and cold
 launches it. On the Full screen layout it asserts that the measurement reports
-Ready, that there is exactly one division and that the division is a zero-width
-line whose x is between 40 and 60 percent of the provider width and whose height
-matches the provider height within 2 points, and that there is exactly one
+Ready, that there is exactly one division and that the division is a line at
+most 1 point wide (the foldable emulator reports a one-pixel hinge) whose x is
+between 40 and 60 percent of the provider width and whose height matches the
+provider height within 2 points, and that there is exactly one
 occlusion whose frame sits in the provider top-right corner. It then taps Content
 box and asserts Ready, one remaining division and no occlusion. A screenshot of
 each asserted state is written to the ignored `e2e/artifacts/` directory, and a
