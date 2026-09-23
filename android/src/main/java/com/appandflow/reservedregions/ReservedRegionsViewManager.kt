@@ -18,10 +18,12 @@ class ReservedRegionsViewManager : ReactViewManager() {
 
   override fun addEventEmitters(reactContext: ThemedReactContext, view: ReactViewGroup) {
     super.addEventEmitters(reactContext, view)
-    (view as ReservedRegionsView).setOnRegionsChangeHandler { source, regions ->
+    (view as ReservedRegionsView).setOnRegionsChangeHandler { source, regions, synchronous ->
       val sourceContext = source.context as ReactContext
       UIManagerHelper.getEventDispatcherForReactTag(sourceContext, source.id)
-        ?.dispatchEvent(RegionsChangeEvent(UIManagerHelper.getSurfaceId(sourceContext), source.id, regions))
+        ?.dispatchEvent(
+          RegionsChangeEvent(UIManagerHelper.getSurfaceId(sourceContext), source.id, regions, synchronous),
+        )
     }
   }
 

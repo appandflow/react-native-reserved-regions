@@ -74,7 +74,7 @@ Native measurements arrive during iOS layout. On Android the first measurement f
 
 Give the provider nonzero dimensions even while rendering a placeholder. A provider whose size depends entirely on children that are hidden until readiness can otherwise remain pending. The unsupported-platform fallback reports a known empty result after mounting. Readiness means an initial result is available, not that the device supports reserved regions or that future geometry cannot change.
 
-Native events request synchronous React delivery and suppress unchanged region snapshots. The first visible frame still depends on React Native scheduling and when the platform supplies its geometry; synchronous dispatch alone is not a first-frame guarantee.
+Native code suppresses unchanged region snapshots. The first measurement requests synchronous React delivery; later changes are regular events that React receives at a later event beat. The first visible frame still depends on React Native scheduling and when the platform supplies its geometry; synchronous dispatch alone is not a first-frame guarantee.
 
 Calling either hook outside a provider throws. Nested providers each establish a coordinate space; a consumer always reads the nearest one.
 

@@ -9,10 +9,11 @@ internal class RegionsChangeEvent(
   surfaceId: Int,
   viewTag: Int,
   private val regions: List<ReservedRegion>,
+  private val synchronous: Boolean,
 ) : Event<RegionsChangeEvent>(surfaceId, viewTag) {
   override fun getEventName() = NAME
 
-  override fun experimental_isSynchronous() = true
+  override fun experimental_isSynchronous() = synchronous
 
   override fun getEventData(): WritableMap {
     val payload = Arguments.createMap()

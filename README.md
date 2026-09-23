@@ -95,7 +95,8 @@ The library reports geometry and does not reposition content. Normal safe area i
 
 ## Measurement timing
 
-Native events request synchronous delivery. Android measures after Fabric mounting
+The first measurement requests synchronous delivery; later changes are regular
+events. Android measures after Fabric mounting
 and again on its own relayout, fold changes and window inset changes; scrolling
 or moving an ancestor does not trigger a measurement. On iOS, same-frame delivery requires React Native
 [#58530](https://github.com/react/react-native/pull/58530); see
