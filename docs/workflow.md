@@ -72,7 +72,8 @@ compilation; it does not prove Duo behavior.
 
 The example offers full-screen, inset and content-box providers and displays
 safe-area-context values for comparison. Verify provider-relative coordinates,
-clipping on Android, empty results outside a region, and line-shaped divisions.
+unclipped frames that extend past the provider, empty results outside a region,
+and line-shaped divisions.
 On Android, use a foldable emulator to exercise native folding features and a
 cutout to exercise occlusions. Record the emulator posture and runtime.
 

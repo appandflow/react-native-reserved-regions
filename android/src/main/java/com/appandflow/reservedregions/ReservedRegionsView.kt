@@ -133,13 +133,13 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
 
     for (feature in foldingFeatures) {
       if (!feature.isSeparating && feature.occlusionType != FoldingFeature.OcclusionType.FULL) continue
-      val frame = clippedFrame(feature.bounds, windowLocation[0], windowLocation[1]) ?: continue
+      val frame = intersectingFrame(feature.bounds, windowLocation[0], windowLocation[1]) ?: continue
       regions.add(ReservedRegion("division", frame, feature.occlusionType == FoldingFeature.OcclusionType.FULL))
     }
 
     if (Build.VERSION.SDK_INT >= 28) {
       rootWindowInsets?.displayCutout?.boundingRects?.forEach { bounds ->
-        clippedFrame(bounds, windowLocation[0], windowLocation[1])?.let { frame ->
+        intersectingFrame(bounds, windowLocation[0], windowLocation[1])?.let { frame ->
           regions.add(ReservedRegion("occlusion", frame))
         }
       }
@@ -166,12 +166,13 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
       .postFrameCallback(ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, frameEndCallback)
   }
 
-  private fun clippedFrame(bounds: Rect, originX: Int, originY: Int): Rect? {
-    val left = max(0, bounds.left - originX)
-    val top = max(0, bounds.top - originY)
-    val right = min(width, bounds.right - originX)
-    val bottom = min(height, bounds.bottom - originY)
+  private fun intersectingFrame(bounds: Rect, originX: Int, originY: Int): Rect? {
+    val frame = Rect(bounds.left - originX, bounds.top - originY, bounds.right - originX, bounds.bottom - originY)
+    val left = max(0, frame.left)
+    val top = max(0, frame.top)
+    val right = min(width, frame.right)
+    val bottom = min(height, frame.bottom)
     if (right < left || bottom < top || (right == left && bottom == top)) return null
-    return Rect(left, top, right, bottom)
+    return frame
   }
 }

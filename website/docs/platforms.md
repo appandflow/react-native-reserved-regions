@@ -14,6 +14,8 @@ When built with the iOS 27.1 SDK or later and running on iOS 27.1 or later, the 
 
 The implementation assumes iOS divisions do not hide content. This is a library mapping, not a separate UIKit occlusion property. Occlusion frames can cover hardware or supported system UI and may include interaction margins.
 
+UIKit returns only regions that intersect the provider, with their full frames in provider coordinates. The library does not clip them to the provider bounds.
+
 The implementation calls typed UIKit APIs behind both an SDK compile guard and a runtime availability check:
 
 ```objc
@@ -45,6 +47,8 @@ The library observes Jetpack WindowManager `1.5.1` and reads display cutout boun
 | `OcclusionType.FULL` on that feature | `occludesContent: true`                         |
 | Other included folding features      | `occludesContent: false`                        |
 | Display cutout rectangle on API 28+  | `occlusion`                                     |
+
+Folding features and cutouts that do not intersect the provider are omitted. Those that do keep their full frames in provider coordinates, as on iOS; the library does not clip them to the provider bounds. See [coordinate spaces](./coordinates.md#native-geometry).
 
 A non-separating fold with no full occlusion is omitted. Hardware and posture determine what WindowManager reports; an emulator needs a compatible foldable profile to provide folding features. Cutouts and folds are separate sources, so a provider can receive both kinds at once.
 
