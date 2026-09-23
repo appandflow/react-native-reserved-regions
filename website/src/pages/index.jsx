@@ -16,7 +16,7 @@ for (const region of regions) {
 
 const portraitFrame = { width: 669, height: 951 };
 const portraitRegions = {
-  division: { x: 334.5, y: 0, width: 0, height: 951 },
+  division: { x: 0, y: 475.5, width: 669, height: 0 },
   occlusion: { x: 573, y: 42, width: 54, height: 54 },
 };
 
@@ -45,7 +45,7 @@ function RegionLabel({ kind, frame }) {
 
 function GeometryPreview() {
   const geometryStyle = {
-    '--division-x': `${(portraitRegions.division.x / portraitFrame.width) * 100}%`,
+    '--division-y': `${(portraitRegions.division.y / portraitFrame.height) * 100}%`,
     '--cutout-x': `${(portraitRegions.occlusion.x / portraitFrame.width) * 100}%`,
     '--cutout-y': `${(portraitRegions.occlusion.y / portraitFrame.height) * 100}%`,
     '--cutout-width': `${(portraitRegions.occlusion.width / portraitFrame.width) * 100}%`,

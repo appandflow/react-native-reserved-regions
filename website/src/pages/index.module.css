@@ -110,9 +110,10 @@
 }
 .panes {
   position: absolute;
-  inset: 65px 18px 20px;
+  inset: 24px 18px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 42px;
 }
 .pane {
@@ -132,24 +133,24 @@
   border-radius: 3px;
 }
 .tile {
-  height: 75px;
+  height: 56px;
   background: var(--rr-subtle);
   border-radius: 8px;
   margin: 15px 0;
 }
 .fold {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: var(--division-x);
-  border-left: 2px solid #d57839;
+  top: var(--division-y);
+  right: 0;
+  left: 0;
+  border-top: 2px solid #d57839;
   background: #d5783915;
 }
 .fold span {
   position: absolute;
-  top: 106px;
-  left: 0;
-  transform: translateX(-50%);
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: #fff4e9;
   border: 1px solid #e8b992;
   border-radius: 4px;
@@ -201,7 +202,7 @@
   transition: transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 .preview:has(.rotateToggle:checked) .fold span {
-  transform: translateX(-50%) rotate(-90deg);
+  transform: translate(-50%, -50%) rotate(-90deg);
 }
 .preview:has(.rotateToggle:checked) .cutout span {
   transform: rotate(-90deg) translate(calc(-100% - 18px), -50%);
