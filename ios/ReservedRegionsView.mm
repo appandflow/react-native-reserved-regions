@@ -28,7 +28,8 @@ using namespace facebook::react;
       // UIKit posts no reserved-region change notification, so hinge updates schedule the re-query.
       __weak __typeof(self) weakSelf = self;
       UIHingeInteraction *hingeInteraction =
-          [[UIHingeInteraction alloc] initWithUpdateHandler:^(UIHingeInteraction *, UIHingeInteractionUpdate *) {
+          [[UIHingeInteraction alloc] initWithUpdateHandler:^(UIHingeInteraction *, UIHingeInteractionUpdate *update) {
+            NSLog(@"RRPROBE %p hinge %@", weakSelf, update);
             [weakSelf setNeedsLayout];
           }];
       [self addInteraction:hingeInteraction];
@@ -109,6 +110,7 @@ using namespace facebook::react;
   }
   auto eventEmitter = _eventEmitter;
   if (_hasDispatchedRegions) {
+    NSLog(@"RRPROBE %p unique bounds=%@ regions=%@", self, NSStringFromCGRect(self.bounds), regions);
     // React Native's EventQueue replaces this view's pending unique event when it is the last one queued.
     eventEmitter->dispatchUniqueEvent(
         "regionsChange",
@@ -116,6 +118,7 @@ using namespace facebook::react;
     return;
   }
   _hasDispatchedRegions = YES;
+  NSLog(@"RRPROBE %p sync bounds=%@ regions=%@", self, NSStringFromCGRect(self.bounds), regions);
   eventEmitter->experimental_flushSync([eventEmitter, regions = std::move(regionPayloads)]() mutable {
     eventEmitter->dispatchEvent(
         "regionsChange",

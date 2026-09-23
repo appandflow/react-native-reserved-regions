@@ -1,0 +1,71 @@
+name: Duo verify (temporary)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  duo:
+    runs-on: xcode-27
+    timeout-minutes: 75
+    env:
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+      DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+    steps:
+      - name: Toolchain probe
+        env:
+          DEVELOPER_DIR: ''
+        run: |
+          sw_vers
+          ls -d /Applications/Xcode*
+          test -d /Applications/Xcode_27.1_beta.app || { echo "::error::Xcode 27.1 beta is not on this image"; exit 1; }
+      - run: xcodebuild -version
+      - name: Download iOS 27.1 simulator runtime
+        run: |
+          time xcodebuild -downloadPlatform iOS
+          xcrun simctl runtime list
+          xcrun simctl list runtimes
+          xcrun simctl list devicetypes | grep -i -E 'duo|fold' || { echo "::error::no iPhone Duo device type"; xcrun simctl list devicetypes; exit 1; }
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: ./.github/actions/setup
+      - uses: ruby/setup-ruby@a0102e0972be65f351c307e2d64b9314a57c8073 # v1
+        with:
+          ruby-version: '3.4.8'
+          bundler-cache: true
+          working-directory: example
+      - run: bundle exec pod install --project-directory=ios
+        working-directory: example
+      - name: Build Release app
+        working-directory: example
+        run: >-
+          xcodebuild -workspace ios/ReservedRegionsExample.xcworkspace
+          -scheme ReservedRegionsExample -configuration Release
+          -sdk iphonesimulator -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath build CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=YES ARCHS=arm64
+          build | tail -n 60; test "${PIPESTATUS[0]}" = 0
+        shell: bash
+      - name: Create and boot iPhone Duo
+        run: |
+          type_id=$(xcrun simctl list devicetypes -j | jq -r '.devicetypes[] | select(.name == "iPhone Duo") | .identifier')
+          runtime_id=$(xcrun simctl list runtimes -j | jq -r '[.runtimes[] | select(.platform == "iOS" and .isAvailable)] | sort_by(.version) | last | .identifier')
+          echo "type=$type_id runtime=$runtime_id"
+          udid=$(xcrun simctl create rr-duo "$type_id" "$runtime_id")
+          echo "DUO_UDID=$udid" >> "$GITHUB_ENV"
+          xcrun simctl boot "$udid"
+          xcrun simctl bootstatus "$udid" -b
+          xcrun simctl install "$udid" example/build/Build/Products/Release-iphonesimulator/ReservedRegionsExample.app
+          xcrun simctl io "$udid" enumerate || true
+      - run: npm install -g agent-device@0.21.12
+      - name: Drive postures and layouts
+        run: node e2e/ios-duo-verify.mjs
+      - name: Collect native probe log
+        if: always()
+        run: |
+          mkdir -p e2e/artifacts
+          xcrun simctl spawn "$DUO_UDID" log show --last 60m --style compact --predicate 'eventMessage CONTAINS "RRPROBE"' | tee e2e/artifacts/rrprobe.log
+          xcrun simctl io "$DUO_UDID" enumerate > e2e/artifacts/displays.txt 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: duo-evidence
+          path: e2e/artifacts
