@@ -20,9 +20,7 @@
     "lib",
     "android",
     "ios",
-    "cpp",
     "*.podspec",
-    "react-native.config.js",
     "!ios/build",
     "!android/build",
     "!android/gradle",
@@ -65,7 +63,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@react-native/babel-preset": "0.88.0-rc.1",
-    "@react-native/jest-preset": "0.86.2",
+    "@react-native/jest-preset": "0.88.0-rc.1",
     "@types/react": "^19.2.0",
     "@types/react-test-renderer": "^19.1.0",
     "del-cli": "^7.0.0",
@@ -79,8 +77,8 @@
     "typescript": "7.0.2"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "react": ">=19.1.0",
+    "react-native": ">=0.80.0"
   },
   "jest": {
     "modulePathIgnorePatterns": [
@@ -120,8 +118,8 @@
     "type": "fabric-view",
     "languages": "kotlin-objc",
     "tools": [
-      "eslint",
-      "jest"
+      "jest",
+      "oxlint"
     ],
     "version": "0.63.1"
   },

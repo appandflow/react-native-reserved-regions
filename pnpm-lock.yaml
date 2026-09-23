@@ -119,8 +119,8 @@ importers:
         specifier: 0.88.0-rc.1
         version: 0.88.0-rc.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
       '@react-native/jest-preset':
-        specifier: 0.86.2
-        version: 0.86.2(@babel/core@7.29.7(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)
+        specifier: 0.88.0-rc.1
+        version: 0.88.0-rc.1(@babel/core@7.29.7(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)
       '@types/react':
         specifier: ^19.2.0
         version: 19.3.0
@@ -2183,21 +2183,11 @@ packages:
     resolution: {integrity: sha512-ptIiam1bzNQyiKUjwZKTkAcc9LajS8GDoPxKMNP7ZEx35sc7p0JNAcckEYKOKMGmxotFAxzHn02W3lZHujacXA==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  '@react-native/jest-preset@0.86.2':
-    resolution: {integrity: sha512-wneoqwKWdv6wIcWotVgp6NMlMWcJDjxDnp7fVYym2Pn6JLgAKgkbmuHGmxW0cLCGoa9wtcO680uciv+Kzx0G7w==}
-    engines: {node: '>= 20.19.4'}
-    peerDependencies:
-      react: ^19.2.3
-
   '@react-native/jest-preset@0.88.0-rc.1':
     resolution: {integrity: sha512-Ncz2WOHgOISWhrNISW2yvCVWJe4HilnhoaFVLAuucOsVxYv7SWMMtlkBEbmagNJpks9BAaDElsvGdp8elJG1bg==}
     engines: {node: '>= 22.13.0'}
     peerDependencies:
       react: ^19.2.3
-
-  '@react-native/js-polyfills@0.86.2':
-    resolution: {integrity: sha512-bIwNcGBaQ74shB5z1mRkxOpjikimuwsnOCEkZSzL67Z1FTyK1ObpENfyd2QvcvVW9Cjl+tHuw9ynpBnb2jPoJQ==}
-    engines: {node: ^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0}
 
   '@react-native/js-polyfills@0.88.0-rc.1':
     resolution: {integrity: sha512-QhJHrEKmMTnsCd2z3n8dQjBwN2blc7zcKgswvQKQaAypHkS99X8qdTXZHuX7Ok+GpcmKQoAYy68RtFVV36ACMw==}
@@ -10313,18 +10303,6 @@ snapshots:
 
   '@react-native/gradle-plugin@0.88.0-rc.1': {}
 
-  '@react-native/jest-preset@0.86.2(@babel/core@7.29.7(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)':
-    dependencies:
-      '@jest/create-cache-key-function': 29.7.0
-      '@react-native/js-polyfills': 0.86.2
-      babel-jest: 29.7.0(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
-      jest-environment-node: 29.7.0
-      react: 19.3.0
-      regenerator-runtime: 0.13.11
-    transitivePeerDependencies:
-      - '@babel/core'
-      - supports-color
-
   '@react-native/jest-preset@0.88.0-rc.1(@babel/core@7.29.7(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)':
     dependencies:
       '@jest/create-cache-key-function': 29.7.0
@@ -10336,8 +10314,6 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - supports-color
-
-  '@react-native/js-polyfills@0.86.2': {}
 
   '@react-native/js-polyfills@0.88.0-rc.1': {}
 
