@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ReservedRegionsProvider, useReservedRegions, useReservedRegionsReady } from 'react-native-reserved-regions';
 
-const layouts = ['Full screen', 'Inset 24', 'Content box'] as const;
+const layouts = ['Full screen', 'Shift 40', 'Inset 24', 'Content box'] as const;
 type Layout = (typeof layouts)[number];
 
 function RegionInspector() {
@@ -84,17 +84,19 @@ function Example() {
 
   return (
     <View style={styles.screen}>
-      <SafeAreaProvider
+      <View
         style={[
           styles.provider,
-          layout !== 'Full screen' && styles.inset,
+          (layout === 'Inset 24' || layout === 'Content box') && styles.inset,
           layout === 'Content box' && styles.contentBox,
         ]}
       >
-        <ReservedRegionsProvider style={styles.regionProvider}>
-          <RegionInspector />
+        <ReservedRegionsProvider style={[styles.regionProvider, layout === 'Shift 40' && styles.shifted]}>
+          <SafeAreaProvider>
+            <RegionInspector />
+          </SafeAreaProvider>
         </ReservedRegionsProvider>
-      </SafeAreaProvider>
+      </View>
       <View style={[styles.controls, { bottom: Math.max(insets.bottom, 16) }]}>
         {layouts.map((option) => (
           <Pressable
@@ -136,6 +138,10 @@ const styles = StyleSheet.create({
   },
   contentBox: {
     top: 180,
+  },
+  shifted: {
+    marginLeft: 40,
+    marginRight: -40,
   },
   regionProvider: {
     flex: 1,
