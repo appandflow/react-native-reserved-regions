@@ -29,11 +29,12 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
   private val layoutInfoConsumer = Consumer<WindowLayoutInfo> { info ->
     foldingFeatures = info.displayFeatures.filterIsInstance<FoldingFeature>()
     foldingFeaturesReady = true
-    updateRegions()
+    if (hasDispatchedRegions) updateRegionsIfInputsChanged() else updateRegions()
   }
   private var foldingFeatures: List<FoldingFeature> = emptyList()
   private var foldingFeaturesReady = false
   private var lastRegions: List<ReservedRegion>? = null
+  private var measuredInputs: MeasurementInputs? = null
   private var awaitingFirstMount = true
   private var hasDispatchedRegions = false
   private var onRegionsChange: RegionsChangeHandler? = null
@@ -52,16 +53,18 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
-    uiManager = UIManagerHelper.getUIManagerForReactTag(UIManagerHelper.getReactContext(this), id)
-    awaitingFirstMount = true
-    // React Native's FabricMountingManager.cpp applies layout before installing a view's event
-    // emitter inside one mount batch, so onLayout cannot dispatch a synchronous event on first
-    // mount; didMountItems is the earliest point after the emitter exists and before the event
-    // beat. It runs for every mount batch in the app, so it is removed after the first delivery.
-    uiManager?.addUIManagerEventListener(this)
-    foldingFeatures = emptyList()
-    foldingFeaturesReady = false
-    lastRegions = null
+    if (!hasDispatchedRegions) {
+      uiManager = UIManagerHelper.getUIManagerForReactTag(UIManagerHelper.getReactContext(this), id)
+      awaitingFirstMount = true
+      // React Native's FabricMountingManager.cpp applies layout before installing a view's event
+      // emitter inside one mount batch, so onLayout cannot dispatch a synchronous event on first
+      // mount; didMountItems is the earliest point after the emitter exists and before the event
+      // beat. It runs for every mount batch in the app, so it is removed after the first delivery.
+      uiManager?.addUIManagerEventListener(this)
+      foldingFeatures = emptyList()
+      foldingFeaturesReady = false
+      lastRegions = null
+    }
     val activity = (context as? ThemedReactContext)?.currentActivity
     if (activity != null) {
       val windowTracker = WindowInfoTracker.getOrCreate(context)
@@ -75,6 +78,7 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
     } else {
       foldingFeaturesReady = true
     }
+    if (hasDispatchedRegions) updateRegionsIfInputsChanged()
   }
 
   override fun onDetachedFromWindow() {
@@ -105,21 +109,21 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
     val handler = onRegionsChange ?: return false
     if (!isAttachedToWindow || !foldingFeaturesReady || width == 0 || height == 0) return false
 
+    val inputs = measurementInputs()
+    measuredInputs = inputs
     val windowLocation = IntArray(2)
     getLocationInWindow(windowLocation)
     val regions = mutableListOf<ReservedRegion>()
 
-    for (feature in foldingFeatures) {
+    for (feature in inputs.foldingFeatures) {
       if (!feature.isSeparating && feature.occlusionType != FoldingFeature.OcclusionType.FULL) continue
       val frame = intersectingFrame(feature.bounds, windowLocation[0], windowLocation[1]) ?: continue
       regions.add(ReservedRegion("division", frame, feature.occlusionType == FoldingFeature.OcclusionType.FULL))
     }
 
-    if (Build.VERSION.SDK_INT >= 28) {
-      rootWindowInsets?.displayCutout?.boundingRects?.forEach { bounds ->
-        intersectingFrame(bounds, windowLocation[0], windowLocation[1])?.let { frame ->
-          regions.add(ReservedRegion("occlusion", frame))
-        }
+    for (bounds in inputs.cutouts) {
+      intersectingFrame(bounds, windowLocation[0], windowLocation[1])?.let { frame ->
+        regions.add(ReservedRegion("occlusion", frame))
       }
     }
 
@@ -134,6 +138,16 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
     return true
   }
 
+  private fun updateRegionsIfInputsChanged() {
+    if (measurementInputs() != measuredInputs) updateRegions()
+  }
+
+  private fun measurementInputs() = MeasurementInputs(
+    foldingFeatures,
+    if (Build.VERSION.SDK_INT >= 28) rootWindowInsets?.displayCutout?.boundingRects.orEmpty() else emptyList(),
+    Rect(left, top, right, bottom),
+  )
+
   private fun intersectingFrame(bounds: Rect, originX: Int, originY: Int): Rect? {
     val frame = Rect(bounds.left - originX, bounds.top - originY, bounds.right - originX, bounds.bottom - originY)
     val left = max(0, frame.left)
@@ -144,3 +158,9 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
     return frame
   }
 }
+
+private data class MeasurementInputs(
+  val foldingFeatures: List<FoldingFeature>,
+  val cutouts: List<Rect>,
+  val frame: Rect,
+)
