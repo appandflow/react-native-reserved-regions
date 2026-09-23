@@ -14,6 +14,8 @@ When built with the iOS 27.1 SDK or later and running on iOS 27.1 or later, the 
 
 The implementation assumes iOS divisions do not hide content. This is a library mapping, not a separate UIKit occlusion property. Occlusion frames can cover hardware or supported system UI and may include interaction margins.
 
+UIKit returns only regions that intersect the provider, with their full frames in provider coordinates. The library does not clip them to the provider bounds.
+
 The implementation calls typed UIKit APIs behind both an SDK compile guard and a runtime availability check:
 
 ```objc
@@ -46,6 +48,8 @@ The library observes Jetpack WindowManager `1.5.1` and reads display cutout boun
 | Other included folding features      | `occludesContent: false`                        |
 | Display cutout rectangle on API 28+  | `occlusion`                                     |
 
+Folding features and cutouts that do not intersect the provider are omitted. Those that do keep their full frames in provider coordinates, as on iOS; the library does not clip them to the provider bounds. See [coordinate spaces](./coordinates.md#native-geometry).
+
 A non-separating fold with no full occlusion is omitted. Hardware and posture determine what WindowManager reports; an emulator needs a compatible foldable profile to provide folding features. Cutouts and folds are separate sources, so a provider can receive both kinds at once.
 
 The Android implementation reports display cutouts and the included folding features. It does not report arbitrary overlapping app windows, the keyboard, or system bars as occlusion rectangles.
@@ -61,10 +65,11 @@ The fallback component renders a React Native `View` and reports a known empty r
 Android takes its first measurement after Fabric mounts the view, when its event
 emitter is available and before React Native's event beat. Later React relayouts
 are measured in the Android layout pass, so their event reaches React at the beat
-that follows the same mount batch. Pre-draw observation covers everything else,
-including ancestor scrolling and native window changes; those measurements can
-reach React in a subsequent frame. Older WindowManager extensions may await their
-first callback.
+that follows the same mount batch. The provider also re-measures when WindowManager
+reports new folding features and when window insets reach the provider, which
+covers display cutout changes unless an ancestor consumes the insets. Scrolling,
+moving an ancestor or transforming the provider does not trigger a measurement.
+Older WindowManager extensions may await their first callback.
 
 On iOS, the provider re-measures when its own layout changes, including a move
 that keeps its size, when it moves into a window, and on hinge updates. Scrolling

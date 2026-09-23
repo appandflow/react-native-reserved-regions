@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.os.Build
 import android.view.Choreographer
-import android.view.ViewTreeObserver
+import android.view.WindowInsets
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import androidx.window.WindowSdkExtensions
@@ -26,13 +26,13 @@ import kotlin.math.min
 internal typealias RegionsChangeHandler = (ReservedRegionsView, List<ReservedRegion>) -> Unit
 
 @OptIn(UnstableReactNativeAPI::class)
-class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeObserver.OnPreDrawListener, UIManagerListener {
+class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManagerListener {
   private var uiManager: UIManager? = null
   private var tracker: WindowInfoTrackerCallbackAdapter? = null
   private val layoutInfoConsumer = Consumer<WindowLayoutInfo> { info ->
     foldingFeatures = info.displayFeatures.filterIsInstance<FoldingFeature>()
     foldingFeaturesReady = true
-    invalidate()
+    updateRegions()
   }
   private var foldingFeatures: List<FoldingFeature> = emptyList()
   private var foldingFeaturesReady = false
@@ -77,7 +77,6 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
     // mount; didMountItems is the earliest point after the emitter exists and before the event
     // beat. It runs for every mount batch in the app, so it is removed after the first delivery.
     uiManager?.addUIManagerEventListener(this)
-    viewTreeObserver.addOnPreDrawListener(this)
     foldingFeatures = emptyList()
     foldingFeaturesReady = false
     lastRegions = null
@@ -101,7 +100,6 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
     uiManager = null
     tracker?.removeWindowLayoutInfoListener(layoutInfoConsumer)
     tracker = null
-    viewTreeObserver.removeOnPreDrawListener(this)
     ReactChoreographer.getInstance()
       .removeFrameCallback(ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, frameEndCallback)
     eventInFrame = false
@@ -114,15 +112,15 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
     if (!awaitingFirstMount) updateRegions()
   }
 
-  override fun onPreDraw(): Boolean {
-    updateRegions()
-    return true
+  override fun onApplyWindowInsets(insets: WindowInsets): WindowInsets {
+    val result = super.onApplyWindowInsets(insets)
+    if (!awaitingFirstMount) updateRegions()
+    return result
   }
 
   internal fun setOnRegionsChangeHandler(handler: RegionsChangeHandler) {
     onRegionsChange = handler
     lastRegions = null
-    invalidate()
   }
 
   private fun updateRegions(): Boolean {
@@ -135,13 +133,13 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
 
     for (feature in foldingFeatures) {
       if (!feature.isSeparating && feature.occlusionType != FoldingFeature.OcclusionType.FULL) continue
-      val frame = clippedFrame(feature.bounds, windowLocation[0], windowLocation[1]) ?: continue
+      val frame = intersectingFrame(feature.bounds, windowLocation[0], windowLocation[1]) ?: continue
       regions.add(ReservedRegion("division", frame, feature.occlusionType == FoldingFeature.OcclusionType.FULL))
     }
 
     if (Build.VERSION.SDK_INT >= 28) {
       rootWindowInsets?.displayCutout?.boundingRects?.forEach { bounds ->
-        clippedFrame(bounds, windowLocation[0], windowLocation[1])?.let { frame ->
+        intersectingFrame(bounds, windowLocation[0], windowLocation[1])?.let { frame ->
           regions.add(ReservedRegion("occlusion", frame))
         }
       }
@@ -168,12 +166,13 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
       .postFrameCallback(ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, frameEndCallback)
   }
 
-  private fun clippedFrame(bounds: Rect, originX: Int, originY: Int): Rect? {
-    val left = max(0, bounds.left - originX)
-    val top = max(0, bounds.top - originY)
-    val right = min(width, bounds.right - originX)
-    val bottom = min(height, bounds.bottom - originY)
+  private fun intersectingFrame(bounds: Rect, originX: Int, originY: Int): Rect? {
+    val frame = Rect(bounds.left - originX, bounds.top - originY, bounds.right - originX, bounds.bottom - originY)
+    val left = max(0, frame.left)
+    val top = max(0, frame.top)
+    val right = min(width, frame.right)
+    val bottom = min(height, frame.bottom)
     if (right < left || bottom < top || (right == left && bottom == top)) return null
-    return Rect(left, top, right, bottom)
+    return frame
   }
 }
