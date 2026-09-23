@@ -145,10 +145,10 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
       return false
     }
     lastRegions = regions
-    handler(this, regions)
     eventInFrame = true
     ReactChoreographer.getInstance()
       .postFrameCallback(ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, frameEndCallback)
+    handler(this, regions)
     if (awaitingFirstMount) {
       awaitingFirstMount = false
       uiManager?.removeUIManagerEventListener(this)
