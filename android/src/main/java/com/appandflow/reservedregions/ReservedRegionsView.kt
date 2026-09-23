@@ -62,9 +62,9 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
       // beat. It runs for every mount batch in the app, so it is removed after the first delivery.
       uiManager?.addUIManagerEventListener(this)
       foldingFeatures = emptyList()
-      foldingFeaturesReady = false
       lastRegions = null
     }
+    foldingFeaturesReady = false
     val activity = (context as? ThemedReactContext)?.currentActivity
     if (activity != null) {
       val windowTracker = WindowInfoTracker.getOrCreate(context)
