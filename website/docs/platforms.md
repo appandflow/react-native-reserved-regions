@@ -68,7 +68,9 @@ first callback.
 
 On iOS, the provider re-measures when its own layout changes, including a move
 that keeps its size, when it moves into a window, and on hinge updates. Scrolling
-or moving an ancestor does not trigger a measurement.
+or moving an ancestor does not trigger a measurement. Neither does a transform or
+native-driver animation on the provider, such as a translation, because it does not
+change layout.
 
 iOS measures in `layoutSubviews`. React Native processes a synchronous event
 requested there one frame later unless it includes [react/react-native#58530](https://github.com/react/react-native/pull/58530),
