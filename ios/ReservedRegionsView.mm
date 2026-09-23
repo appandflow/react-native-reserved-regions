@@ -10,6 +10,7 @@ using namespace facebook::react;
 
 @implementation ReservedRegionsView {
   NSArray<NSDictionary *> *_currentRegions;
+  BOOL _hasDispatchedRegions;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -107,6 +108,14 @@ using namespace facebook::react;
         ("occludesContent", false));
   }
   auto eventEmitter = _eventEmitter;
+  if (_hasDispatchedRegions) {
+    // React Native's EventQueue replaces this view's pending unique event when it is the last one queued.
+    eventEmitter->dispatchUniqueEvent(
+        "regionsChange",
+        folly::dynamic::object("regions", std::move(regionPayloads)));
+    return;
+  }
+  _hasDispatchedRegions = YES;
   eventEmitter->experimental_flushSync([eventEmitter, regions = std::move(regionPayloads)]() mutable {
     eventEmitter->dispatchEvent(
         "regionsChange",
@@ -119,6 +128,7 @@ using namespace facebook::react;
 {
   [super prepareForRecycle];
   _currentRegions = nil;
+  _hasDispatchedRegions = NO;
 }
 
 @end
