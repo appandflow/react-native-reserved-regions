@@ -3,7 +3,7 @@ import type { View, ViewProps } from 'react-native';
 import { ReservedRegionsView } from './ReservedRegionsView';
 import type { RegionsChangeEvent } from './ReservedRegionsViewNativeComponent';
 
-/** A rectangle in logical points relative to the nearest ReservedRegionsProvider. */
+/** A rectangle in logical points relative to the nearest ReservedRegionsProvider. Not clipped to the provider. */
 export type ReservedRegionFrame = Readonly<{
   /** Distance from the provider's left edge. */
   x: number;

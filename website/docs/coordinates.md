@@ -28,9 +28,26 @@ These are provider coordinates, not screen coordinates. A provider can occupy a 
 
 ## Native geometry
 
-On Android, the library translates window-relative folding features and cutouts into provider coordinates, then clips them to the provider bounds. Regions outside the provider are omitted. A fold can have zero width or height and still be meaningful; do not discard line-shaped regions.
+A provider receives the regions that intersect its bounds. Regions outside the provider are omitted. Each included region keeps its full frame, not only the part inside the provider, so a frame can have a negative `x` or `y` or extend past the provider's width or height. A fold that spans the window keeps its full length even when the provider covers only part of it. A fold can have zero width or height and still be meaningful; do not discard line-shaped regions.
 
-On iOS, UIKit performs the view-scoped query. The library forwards the returned frames without an additional clipping pass. UIKit frames can include interaction margins around an obstruction, so they should not be interpreted as exact physical hardware outlines. See [Apple's reserved regions overview](https://developer.apple.com/videos/play/tech-talks/111463/).
+On Android, the library translates window-relative folding features and screen-relative cutouts into provider coordinates. On iOS, UIKit performs the view-scoped query and the library forwards the returned frames. UIKit frames can include interaction margins around an obstruction, so they should not be interpreted as exact physical hardware outlines. See [Apple's reserved regions overview](https://developer.apple.com/videos/play/tech-talks/111463/).
+
+To work with only the visible part, intersect a frame with the provider's size, for example from the provider's `onLayout`:
+
+```ts
+import type { ReservedRegionFrame } from 'react-native-reserved-regions';
+
+function visiblePart(frame: ReservedRegionFrame, provider: { width: number; height: number }): ReservedRegionFrame {
+  const x = Math.max(0, frame.x);
+  const y = Math.max(0, frame.y);
+  return {
+    x,
+    y,
+    width: Math.max(0, Math.min(provider.width, frame.x + frame.width) - x),
+    height: Math.max(0, Math.min(provider.height, frame.y + frame.height) - y),
+  };
+}
+```
 
 The native platforms have different geometry sources. Avoid assuming identical rectangles for similarly shaped hardware across iOS and Android.
 

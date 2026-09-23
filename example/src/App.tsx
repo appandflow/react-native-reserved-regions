@@ -26,22 +26,23 @@ function RegionInspector() {
           },
         ]}
       />
-      {regions.map((region, index) => (
-        <View
-          key={index}
-          pointerEvents="none"
-          style={[
-            styles.overlay,
-            region.kind === 'division' ? styles.division : styles.occlusion,
-            {
-              left: region.frame.x,
-              top: region.frame.y,
-              width: region.frame.width || 2,
-              height: region.frame.height || 2,
-            },
-          ]}
-        />
-      ))}
+      <View pointerEvents="none" style={styles.overlays}>
+        {regions.map((region, index) => (
+          <View
+            key={index}
+            style={[
+              styles.overlay,
+              region.kind === 'division' ? styles.division : styles.occlusion,
+              {
+                left: region.frame.x,
+                top: region.frame.y,
+                width: region.frame.width || 2,
+                height: region.frame.height || 2,
+              },
+            ]}
+          />
+        ))}
+      </View>
       <ScrollView contentContainerStyle={[styles.content, { paddingTop: Math.max(insets.top, 24) + 24 }]}>
         <Text style={styles.title}>Reserved regions</Text>
         <Text style={styles.description}>
@@ -173,6 +174,10 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderStyle: 'dashed',
     borderColor: '#24804b',
+  },
+  overlays: {
+    ...StyleSheet.absoluteFill,
+    overflow: 'hidden',
   },
   overlay: {
     position: 'absolute',

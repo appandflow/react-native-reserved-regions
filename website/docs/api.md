@@ -50,7 +50,7 @@ Readiness does not indicate hardware support or guarantee first-visible-frame ti
 ## ReservedRegionFrame
 
 ```ts
-/** Bounds in logical points relative to the nearest provider. */
+/** Bounds in logical points relative to the nearest provider. Not clipped to the provider. */
 type ReservedRegionFrame = Readonly<{
   /** Horizontal distance from the provider's left edge. */
   x: number;
@@ -63,7 +63,7 @@ type ReservedRegionFrame = Readonly<{
 }>;
 ```
 
-Read [coordinate spaces](./coordinates.md) for native clipping and interaction-margin behavior.
+A frame can extend past the provider's edges. Read [coordinate spaces](./coordinates.md) to get the visible part and for interaction-margin behavior.
 
 ## ReservedRegion
 
