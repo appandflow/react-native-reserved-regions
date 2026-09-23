@@ -42,7 +42,7 @@ jobs:
             node -e 'const r=require(process.argv[1]); if(r.error?.code!=="E404") process.exit(1)' "$RUNNER_TEMP/registry.json"
             npm publish "./artifacts/react-native-reserved-regions-$version.tgz" --provenance --access public --tag "$dist_tag"
           fi
-          for attempt in {1..12}; do
+          for attempt in {1..60}; do
             if npm view "react-native-reserved-regions@$version" version --json > "$RUNNER_TEMP/version.json" &&
               npm view react-native-reserved-regions "dist-tags.$dist_tag" --json > "$RUNNER_TEMP/dist-tag.json" &&
               node -e 'const fs=require("node:fs"); const [a,b,v]=process.argv.slice(1); process.exit(JSON.parse(fs.readFileSync(a))===v && JSON.parse(fs.readFileSync(b))===v ? 0 : 1)' "$RUNNER_TEMP/version.json" "$RUNNER_TEMP/dist-tag.json" "$version"; then
