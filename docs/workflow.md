@@ -117,6 +117,12 @@ For CocoaPods, use a Ruby version compatible with `example/Gemfile`, then run
 `bundle install` and `bundle exec pod install --project-directory=ios` from
 `example/`. Set `LANG=en_US.UTF-8` and `LC_ALL=en_US.UTF-8`.
 
+To test same-frame delivery of the first iOS event, apply
+[react/react-native#58530](https://github.com/react/react-native/pull/58530) to the
+example's React Native manually, for example with `pnpm patch react-native`, and
+reinstall pods with `RCT_USE_PREBUILT_RNCORE=0`; the prebuilt React Native core does
+not contain that change.
+
 ## Pull requests
 
 Before committing, run all checks above and the native builds affected by the
@@ -135,23 +141,3 @@ pnpm run docs:build
 
 Docusaurus serves the site locally; building it does not deploy it. Preview the
 landing page and API documentation at desktop and mobile widths after UI edits.
-
-## React Native event-beat test patch
-
-The example installs React Native `0.88.0-rc.1` with
-`patches/react-native@0.88.0-rc.1.patch` through `pnpm-workspace.yaml`.
-The patch carries the native source changes from
-[upstream PR #58530](https://github.com/react/react-native/pull/58530), commit
-`c73ef0f22a655ed18b626a6373ef69a63912adeb`. It also adds that proposal's
-`kNoTag` prerequisite and adapts two header include contexts to RC1. It excludes
-upstream test and API-snapshot files. The upstream proposal is unmerged.
-
-Run `pnpm install --frozen-lockfile` to reproduce it. The example Podfile sets
-`RCT_USE_PREBUILT_RNCORE=0`: precompiled React Native binaries do not contain these
-source changes. Reinstall pods and rebuild the native app after changing the
-patch. Prebuilt third-party React Native dependencies may still be used.
-
-The patch is an example dependency for testing layout-time synchronous delivery;
-it is not bundled into the library's npm package or applied to consuming apps.
-Verify first-visible-frame behavior with a recorded native run. Passing package
-tests or compiling the synchronous event code does not establish that behavior.
