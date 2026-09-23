@@ -24,7 +24,7 @@ These are provider coordinates, not screen coordinates. A provider can occupy a 
 </View>
 ```
 
-`PanelContent` receives measurements relative to the inset provider. Do not subtract the surrounding padding a second time. If you render an absolute-positioned overlay, place it directly inside that provider so the overlay and region share an origin.
+`PanelContent` receives measurements relative to the inset provider. Do not subtract the surrounding padding a second time. If you render an absolute-positioned overlay, place it inside that provider so the overlay and region share an origin. Frames can extend past the provider, so wrap overlays in an absolute-fill `View` with `overflow: 'hidden'` to keep them within its bounds.
 
 ## Native geometry
 
