@@ -45,7 +45,14 @@ jobs:
           -derivedDataPath build CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=YES ARCHS=arm64
           build | tail -n 60; test "${PIPESTATUS[0]}" = 0
         shell: bash
+      - run: npm install -g agent-device@0.21.12
+      - name: Host resources before boot
+        run: |
+          sysctl hw.memsize hw.ncpu
+          vm_stat | head -12
+          df -h /
       - name: Create and boot iPhone Duo
+        timeout-minutes: 12
         run: |
           type_id=$(xcrun simctl list devicetypes -j | jq -r '.devicetypes[] | select(.name == "iPhone Duo") | .identifier')
           runtime_id=$(xcrun simctl list runtimes -j | jq -r '[.runtimes[] | select(.platform == "iOS" and .isAvailable)] | sort_by(.version) | last | .identifier')
@@ -56,7 +63,14 @@ jobs:
           xcrun simctl bootstatus "$udid" -b
           xcrun simctl install "$udid" example/build/Build/Products/Release-iphonesimulator/ReservedRegionsExample.app
           xcrun simctl io "$udid" enumerate || true
-      - run: npm install -g agent-device@0.21.12
+      - name: Host heartbeat after boot
+        timeout-minutes: 6
+        run: |
+          for i in 1 2 3 4 5 6 7 8; do
+            date; memory_pressure -Q 2>/dev/null | tail -1; sysctl -n vm.swapusage
+            top -l 1 -o mem -n 6 -stats pid,command,mem,cpu | tail -7
+            sleep 20
+          done
       - name: Launch without agent-device
         timeout-minutes: 5
         run: |
@@ -73,6 +87,7 @@ jobs:
         run: node e2e/ios-duo-verify.mjs
       - name: Collect native probe log
         if: always()
+        timeout-minutes: 5
         run: |
           mkdir -p e2e/artifacts
           xcrun simctl spawn "$DUO_UDID" log show --last 60m --style compact --predicate 'eventMessage CONTAINS "RRPROBE"' | tee e2e/artifacts/rrprobe.log
