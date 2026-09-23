@@ -7,8 +7,8 @@ description: Install the package and check native platform requirements.
 
 ## Release status
 
-`0.1.0` is the first stable release. It includes optional readiness gating,
-hinge-driven iOS region refreshes, and cutout support. The first measurement requests
+The current release is `0.2.0`. See the [release notes](https://github.com/appandflow/react-native-reserved-regions/blob/main/docs/releases/0.2.0.md)
+for changes from `0.1.0`, including unclipped Android frames. The first measurement requests
 synchronous delivery; see [measurement timing](./performance.md) for its limits. The repository [example](./example.md)
 remains useful for testing native behavior on supported devices and simulators.
 
