@@ -117,10 +117,8 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
     }
 
     if (Build.VERSION.SDK_INT >= 28) {
-      val screenLocation = IntArray(2)
-      getLocationOnScreen(screenLocation)
       rootWindowInsets?.displayCutout?.boundingRects?.forEach { bounds ->
-        clippedFrame(bounds, screenLocation[0], screenLocation[1])?.let { frame ->
+        clippedFrame(bounds, windowLocation[0], windowLocation[1])?.let { frame ->
           regions.add(ReservedRegion("occlusion", frame))
         }
       }
