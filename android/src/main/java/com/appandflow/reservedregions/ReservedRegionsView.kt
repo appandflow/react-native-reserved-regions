@@ -14,6 +14,7 @@ import androidx.window.layout.WindowInfoTracker
 import androidx.window.layout.WindowLayoutInfo
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UIManagerListener
+import com.facebook.react.common.LifecycleState
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.ThemedReactContext
@@ -41,7 +42,12 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
   private var remeasureAfterFrame = false
   // FabricUIManager.receiveEvent drops a synchronous event for a view that already received one
   // before its DISPATCH_UI frame callback ends; NATIVE_ANIMATED_MODULE callbacks run after that.
+  // FabricUIManager.onHostPause unschedules DISPATCH_UI, so no frame clears it until the host resumes.
   private val frameEndCallback = Choreographer.FrameCallback {
+    if ((context as? ThemedReactContext)?.reactApplicationContext?.lifecycleState != LifecycleState.RESUMED) {
+      postFrameEndCallback()
+      return@FrameCallback
+    }
     eventInFrame = false
     if (remeasureAfterFrame) {
       remeasureAfterFrame = false
@@ -96,6 +102,10 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
     tracker?.removeWindowLayoutInfoListener(layoutInfoConsumer)
     tracker = null
     viewTreeObserver.removeOnPreDrawListener(this)
+    ReactChoreographer.getInstance()
+      .removeFrameCallback(ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, frameEndCallback)
+    eventInFrame = false
+    remeasureAfterFrame = false
     super.onDetachedFromWindow()
   }
 
@@ -146,14 +156,18 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
     }
     lastRegions = regions
     eventInFrame = true
-    ReactChoreographer.getInstance()
-      .postFrameCallback(ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, frameEndCallback)
+    postFrameEndCallback()
     handler(this, regions)
     if (awaitingFirstMount) {
       awaitingFirstMount = false
       uiManager?.removeUIManagerEventListener(this)
     }
     return true
+  }
+
+  private fun postFrameEndCallback() {
+    ReactChoreographer.getInstance()
+      .postFrameCallback(ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, frameEndCallback)
   }
 
   private fun clippedFrame(bounds: Rect, originX: Int, originY: Int): Rect? {
