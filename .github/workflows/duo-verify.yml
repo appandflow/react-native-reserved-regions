@@ -1,6 +1,7 @@
 name: Duo verify (temporary)
 on:
-  workflow_dispatch:
+  push:
+    branches: ['@janic/duo-verify']
 permissions:
   contents: read
 jobs:
