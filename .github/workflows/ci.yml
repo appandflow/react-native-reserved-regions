@@ -28,7 +28,7 @@ jobs:
             echo android=true >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git diff --name-only HEAD^1 HEAD > "$RUNNER_TEMP/changed"
+          git diff --name-only --no-renames HEAD^1 HEAD > "$RUNNER_TEMP/changed"
           shared='^(src/|example/src/|example/[^/]+$|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.nvmrc$|\.github/workflows/ci\.yml$|\.github/actions/)'
           matches() { grep -qE "$shared|$1" "$RUNNER_TEMP/changed" && echo true || echo false; }
           echo "ios=$(matches '^(ios/|example/ios/|[^/]+\.podspec$)')" >> "$GITHUB_OUTPUT"
