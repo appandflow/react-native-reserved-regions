@@ -109,7 +109,7 @@ using namespace facebook::react;
   }
   auto eventEmitter = _eventEmitter;
   if (_hasDispatchedRegions) {
-    // React Native's EventQueue replaces this view's pending unique event, so JS gets only the latest regions.
+    // React Native's EventQueue replaces this view's pending unique event when it is the last one queued.
     eventEmitter->dispatchUniqueEvent(
         "regionsChange",
         folly::dynamic::object("regions", std::move(regionPayloads)));
