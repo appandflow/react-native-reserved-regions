@@ -9,6 +9,30 @@ on:
 permissions:
   contents: read
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      ios: ${{ steps.filter.outputs.ios }}
+      android: ${{ steps.filter.outputs.android }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        if: github.event_name == 'pull_request'
+        with:
+          fetch-depth: 2
+      - id: filter
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" != pull_request ]; then
+            echo ios=true >> "$GITHUB_OUTPUT"
+            echo android=true >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git diff --name-only HEAD^1 HEAD > "$RUNNER_TEMP/changed"
+          shared='^(src/|example/src/|example/[^/]+$|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.nvmrc$|\.github/workflows/ci\.yml$|\.github/actions/)'
+          matches() { grep -qE "$shared|$1" "$RUNNER_TEMP/changed" && echo true || echo false; }
+          echo "ios=$(matches '^(ios/|example/ios/|[^/]+\.podspec$)')" >> "$GITHUB_OUTPUT"
+          echo "android=$(matches '^(android/|example/android/)')" >> "$GITHUB_OUTPUT"
   check:
     runs-on: ubuntu-latest
     steps:
@@ -24,6 +48,8 @@ jobs:
           pnpm pack --pack-destination artifacts
           node scripts/check-package.mjs artifacts/*.tgz
   android:
+    needs: changes
+    if: needs.changes.outputs.android == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -33,10 +59,13 @@ jobs:
         with:
           distribution: zulu
           java-version: '17'
+          cache: gradle
       - run: ./gradlew :app:assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a
         working-directory: example/android
   ios:
-    runs-on: macos-latest
+    needs: changes
+    if: needs.changes.outputs.ios == 'true'
+    runs-on: macos-26
     timeout-minutes: 45
     env:
       LANG: en_US.UTF-8
@@ -47,6 +76,13 @@ jobs:
       - uses: ruby/setup-ruby@a0102e0972be65f351c307e2d64b9314a57c8073 # v1
         with:
           ruby-version: '3.4.8'
+      - id: xcode
+        run: echo "build=$(xcodebuild -version | awk '/Build version/ { print $3 }')" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: example/build/CompilationCache.noindex
+          key: ios-cas-${{ steps.xcode.outputs.build }}-${{ hashFiles('pnpm-lock.yaml', 'example/ios/Podfile.lock') }}-${{ hashFiles('ios/**', 'src/**', 'example/ios/**', '*.podspec') }}
+          restore-keys: ios-cas-${{ steps.xcode.outputs.build }}-${{ hashFiles('pnpm-lock.yaml', 'example/ios/Podfile.lock') }}-
       - run: |
           bundle install
           bundle exec pod install --project-directory=ios
@@ -55,5 +91,6 @@ jobs:
           xcodebuild -workspace ios/ReservedRegionsExample.xcworkspace
           -scheme ReservedRegionsExample -configuration Debug
           -sdk iphonesimulator -destination 'generic/platform=iOS Simulator'
-          -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+          -derivedDataPath build CODE_SIGNING_ALLOWED=NO
+          COMPILATION_CACHE_ENABLE_CACHING=YES build
         working-directory: example

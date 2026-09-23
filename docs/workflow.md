@@ -132,6 +132,11 @@ the review when the example UI changes. Resolve actionable review findings and
 rerun affected checks. Merge only after required CI passes and a maintainer
 has authorized the merge.
 
+On pull requests, CI skips the `ios` and `android` jobs when the diff touches no
+files that affect that platform's build; the path lists are in the `changes` job
+of `.github/workflows/ci.yml`. Pushes to `main`, merge queue runs, manual runs and
+the Release workflow always build both platforms.
+
 ## Documentation
 
 ```sh
