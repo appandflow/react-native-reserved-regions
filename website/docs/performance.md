@@ -18,14 +18,6 @@ can render before its reserved regions are known.
 
 ## Gate content that needs the first measurement
 
-:::note Version availability
-
-`ReservedRegionsGate` is available starting with `0.1.0-alpha.3`.
-On earlier releases, use `useReservedRegionsReady()` and return `null` from your own
-gate component until it is ready.
-
-:::
-
 `ReservedRegionsGate` returns `null` until the nearest provider is ready. It then
 renders its children without adding a native view or a Suspense boundary.
 
@@ -61,13 +53,8 @@ children, the initial measurement may never complete.
 A regions gate waits only for reserved regions. It does not establish readiness
 for other contexts such as safe area insets.
 
-### Synchronous delivery and animation
+### Synchronous delivery
 
 Native events request synchronous React delivery. A gate does not make platform
 measurements arrive sooner, and neither mechanism guarantees that the first
 visible frame contains content on every React Native/platform combination.
-
-Conditionally mounting animated content also exercises Worklets initialization.
-See the [tested Reanimated/Worklets limitation](./usage.md#readiness-gated-animated-content)
-before gating that subtree. The example's dependency patch is not installed into
-consuming apps.
