@@ -3,7 +3,6 @@ package com.appandflow.reservedregions
 import android.content.Context
 import android.graphics.Rect
 import android.os.Build
-import android.view.Choreographer
 import android.view.WindowInsets
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
@@ -14,16 +13,14 @@ import androidx.window.layout.WindowInfoTracker
 import androidx.window.layout.WindowLayoutInfo
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UIManagerListener
-import com.facebook.react.common.LifecycleState
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.views.view.ReactViewGroup
 import kotlin.math.max
 import kotlin.math.min
 
-internal typealias RegionsChangeHandler = (ReservedRegionsView, List<ReservedRegion>) -> Unit
+internal typealias RegionsChangeHandler = (ReservedRegionsView, List<ReservedRegion>, Boolean) -> Unit
 
 @OptIn(UnstableReactNativeAPI::class)
 class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManagerListener {
@@ -38,22 +35,6 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
   private var foldingFeaturesReady = false
   private var lastRegions: List<ReservedRegion>? = null
   private var awaitingFirstMount = true
-  private var eventInFrame = false
-  private var remeasureAfterFrame = false
-  // FabricUIManager.receiveEvent drops a synchronous event for a view that already received one
-  // before its DISPATCH_UI frame callback ends; NATIVE_ANIMATED_MODULE callbacks run after that.
-  // FabricUIManager.onHostPause unschedules DISPATCH_UI, so no frame clears it until the host resumes.
-  private val frameEndCallback = Choreographer.FrameCallback {
-    if ((context as? ThemedReactContext)?.reactApplicationContext?.lifecycleState != LifecycleState.RESUMED) {
-      postFrameEndCallback()
-      return@FrameCallback
-    }
-    eventInFrame = false
-    if (remeasureAfterFrame) {
-      remeasureAfterFrame = false
-      updateRegions()
-    }
-  }
   private var onRegionsChange: RegionsChangeHandler? = null
 
   override fun willDispatchViewUpdates(uiManager: UIManager) {}
@@ -100,10 +81,6 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
     uiManager = null
     tracker?.removeWindowLayoutInfoListener(layoutInfoConsumer)
     tracker = null
-    ReactChoreographer.getInstance()
-      .removeFrameCallback(ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, frameEndCallback)
-    eventInFrame = false
-    remeasureAfterFrame = false
     super.onDetachedFromWindow()
   }
 
@@ -146,24 +123,13 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManager
     }
 
     if (regions == lastRegions) return false
-    if (eventInFrame) {
-      remeasureAfterFrame = true
-      return false
-    }
     lastRegions = regions
-    eventInFrame = true
-    postFrameEndCallback()
-    handler(this, regions)
+    handler(this, regions, awaitingFirstMount)
     if (awaitingFirstMount) {
       awaitingFirstMount = false
       uiManager?.removeUIManagerEventListener(this)
     }
     return true
-  }
-
-  private fun postFrameEndCallback() {
-    ReactChoreographer.getInstance()
-      .postFrameCallback(ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, frameEndCallback)
   }
 
   private fun intersectingFrame(bounds: Rect, originX: Int, originY: Int): Rect? {

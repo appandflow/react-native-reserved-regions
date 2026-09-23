@@ -55,6 +55,8 @@ for other contexts such as safe area insets.
 
 ### Synchronous delivery
 
-Native events request synchronous React delivery. A gate does not make platform
+iOS region events and the first Android measurement request synchronous React
+delivery. Later Android changes are regular events that React receives at the
+next event beat, which can be a few frames after the layout that caused them. A gate does not make platform
 measurements arrive sooner, and neither mechanism guarantees that the first
 visible frame contains content on every React Native/platform combination.

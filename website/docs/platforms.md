@@ -63,9 +63,14 @@ The fallback component renders a React Native `View` and reports a known empty r
 ## Measurement timing
 
 Android takes its first measurement after Fabric mounts the view, when its event
-emitter is available and before React Native's event beat. Later React relayouts
-are measured in the Android layout pass, so their event reaches React at the beat
-that follows the same mount batch. The provider also re-measures when WindowManager
+emitter is available and before React Native's event beat, and delivers it
+synchronously so gated content mounts with a measured snapshot. Later changes are
+regular events that React receives at the next event beat; when several changes
+arrive before that beat, React receives the latest. They are not synchronous
+because React Native's `FabricUIManager` accepts one synchronous event per view
+and event name per frame and drops the rest, and a rotation changes the regions
+more than once in a frame. Later React relayouts are measured in the Android
+layout pass. The provider also re-measures when WindowManager
 reports new folding features and when window insets reach the provider, which
 covers display cutout changes unless an ancestor consumes the insets. Scrolling,
 moving an ancestor or transforming the provider does not trigger a measurement.
