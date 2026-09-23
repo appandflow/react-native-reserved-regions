@@ -2,14 +2,14 @@
 
 Verified September 23, 2026 against `0.2.0` (main commit
 `f5a4f06a4a0b7af8a3a43fb3fcf5a2cf84fbaf25`) on a GitHub-hosted runner. The run
-covers the 0.2.0 iOS changes that the September 22 report predates: origin-only
-re-measurement (#17), unclipped frames and first-event-only synchronous
-delivery (#25).
+covers the two iOS changes since that report, origin-only re-measurement (#17)
+and first-event-only synchronous delivery (#25), and re-checks unclipped frames
+and hinge-driven refresh.
 
 ## Configuration
 
-- Runner label `xcode-27-xlarge`, image `xcode-27-arm64` `20260921.0210`,
-  macOS 27.0, 5 vCPUs and 15 GB of memory.
+- Runner label `xcode-27-xlarge`, image `xcode-27-arm64` `20260921.0210.1`,
+  macOS 27.0, 5 vCPUs and 14 GiB of memory.
 - Xcode 27.1 beta (`27A9269`, `/Applications/Xcode_27.1_beta.app`) through
   `DEVELOPER_DIR`. The iOS 27.1 simulator runtime (`24A94401`, 7.85 GB) is not
   preinstalled; `xcodebuild -downloadPlatform iOS` fetched it without an Apple
@@ -47,6 +47,8 @@ Every division reported `content visible`.
 | 9    | 130°, full screen    | 951 × 669     | Division `(455.5, 0, 40, 669)`; occlusion `(867, 0, 84, 120)`     |
 
 `fold` confirmed hinge angles of 130°, 180° and 130° through CoreDevice. The
+app's `UIHingeInteraction` updates settled at 2.23 to 2.24 radians (about 128°)
+for the 130° steps and 3.14 radians for 180°. The
 closed, 130° full-screen, inset and content-box values match the
 [September 22 report](dynamic-fold-ios-2026-09-22.md), where the content box
 was measured at 113°.
@@ -64,8 +66,8 @@ In **Content box**, the provider is 389 points tall and starts 180 points below
 the window top. The division is reported at y −180 with its full 669-point
 height, extending past both provider edges. The top-right occlusion no longer
 intersects the provider and is omitted. In **Inset 24**, both regions start at
-y −24. UIKit frames are forwarded without clipping, as `platforms.md` states
-and as Android does after #20.
+y −24. UIKit frames are forwarded without clipping, as `platforms.md` states.
+iOS already behaved this way in 0.1.0; 0.2.0 brought Android in line.
 
 ### Hinge-driven removal and restoration
 
@@ -81,8 +83,8 @@ after a hinge update, with unchanged bounds (native log, condensed):
 21:27:40.780 RRPROBE 0x102bf0e00 unique bounds={{0, 0}, {903, 545}} regions=( division {{431.5, -24}, {40, 669}}, occlusion {{843, -24}, {84, 120}} )
 ```
 
-The initial unfold behaved the same way. The provider resized to 951 × 669 at
-21:26:45.9, but the first four dispatches at that size had no division. The
+The initial unfold behaved the same way. The provider had resized to 951 × 669
+by 21:26:45.923, but the first four dispatches at that size had no division. The
 division first appeared at 21:26:47.679, 2 ms after a hinge update, with bounds
 unchanged. The division arrived on a hinge-triggered layout pass, not on the
 resize.
@@ -95,9 +97,10 @@ first, the closed-posture mount at 21:26:39.684, used the synchronous
 12 include every layout switch and posture change.
 
 During the two-second unfold, five payloads were dispatched in 1.8 seconds.
-Two were transient: the closed-panel occlusions in rotated coordinates, then an
-occlusion `(817, 0, 134, 82)`. The screen then settled on the last dispatched
-payload. After every step, the on-screen values equal the last native payload
+Four were superseded: the closed-panel occlusions in rotated coordinates, the
+settled occlusion without a division, an occlusion `(817, 0, 134, 82)`, and the
+settled occlusion again. The fifth added the division, and the screen settled
+on it. After every step, the on-screen values equal the last native payload
 dispatched before the snapshot. So later events reach JavaScript and React ends
 with the latest value.
 
@@ -109,7 +112,8 @@ The temporary workflow `.github/workflows/duo-verify.yml` and driver
 [run 35921251206](https://github.com/appandflow/react-native-reserved-regions/actions/runs/35921251206):
 screenshots, accessibility snapshots, `results.json` and `rrprobe.log`. The
 workflow downloads the runtime, builds Release, creates and boots the Duo, and
-drives this sequence:
+drives the nine steps in the table, snapshotting and screenshotting after each.
+Excerpt:
 
 ```sh
 agent-device open reservedregions.example --relaunch
@@ -118,20 +122,24 @@ agent-device press 'role=button label="Shift 40"' --settle
 agent-device fold --keyframes '[{"atMs":0,"angle":130},{"atMs":2000,"angle":180}]'
 ```
 
-The job takes about 13 minutes; the runtime download takes 1.5 to 3 minutes.
+The job takes about 13 minutes; the runtime download takes about 1.5 to 3
+minutes.
 
 ### Runner constraints
 
-- The standard `xcode-27` runner (3 vCPUs, 7 GB) stopped responding within
-  minutes of booting the iPhone Duo in three of three attempts. Steps with
-  their own timeouts never finished, and no job log was uploaded. The 5-vCPU,
-  15 GB `xcode-27-xlarge` runner completed the run.
+- The standard `xcode-27` runner (3 vCPUs, 7 GiB) stopped responding within
+  minutes of booting the iPhone Duo in all three jobs that reached a boot. One
+  hung step had a 6-minute step timeout and was still running 17 minutes later.
+  None of the three jobs uploaded a log. The 5-vCPU, 14 GiB `xcode-27-xlarge`
+  runner completed the run.
 - The `20260921` image, which adds Xcode 27.1 beta, was still rolling out.
-  Two of seven jobs landed on `20260912`, which has only Xcode 27.0. The workflow
+  Two of seven jobs landed on `20260912`, which has only Xcode 27.0 (RC). The workflow
   checks for `/Applications/Xcode_27.1_beta.app` and fails in seconds.
-- Deleting the preinstalled 27.0 runtimes with `simctl runtime delete` broke
-  CoreSimulator in that job (`liblaunch_sim.dylib could not be opened`). Leave
-  them in place.
+- A job that deleted the preinstalled 27.0 runtimes with `simctl runtime delete`
+  (and removed the Android SDK, Xcode 27.2 beta and existing devices) could not
+  boot: `The iOS 27.1 simulator runtime is not available` /
+  `liblaunch_sim.dylib could not be opened`, while the 27.0 runtimes were still
+  deleting. Leave them in place.
 
 ## Limits
 
