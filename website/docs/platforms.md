@@ -86,9 +86,7 @@ iOS measures in `layoutSubviews`. The first measurement after the provider mount
 is a synchronous event, so `ReservedRegionsGate` content can mount with it. React
 Native processes that event one frame later unless it includes [react/react-native#58530](https://github.com/react/react-native/pull/58530),
 which processes the event beat in the frame that requested it. That change is merged
-into React Native's `main` branch but is not in the 0.88 release candidates. The
-repository example applies it as a patch; the published package does not patch
-your app's React Native. See [the example setup](./example.md#react-native-event-beat-patch).
+into React Native's `main` branch but is not in the 0.88 release candidates.
 Later changes are regular events that React receives at a later event beat. When
 several changes happen before JavaScript processes them, the intermediate ones are
 usually coalesced, and React always ends with the latest.

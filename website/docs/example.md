@@ -76,17 +76,7 @@ pnpm test
 pnpm run build
 ```
 
-## React Native event-beat patch
-
-The workspace applies `patches/react-native@0.88.0-rc.1.patch` to its example's React
-Native dependency. It contains the [event-beat change #58530](https://github.com/react/react-native/pull/58530)
-at commit `c73ef0f22a655ed18b626a6373ef69a63912adeb`, adapted to RC1. The Podfile
-sets `RCT_USE_PREBUILT_RNCORE=0`, so CocoaPods compiles the patched iOS RN core from
-source. Reinstall pods and rebuild after changing the patch.
-
-This patch is confined to the repository example. Installing the published library
-does not apply it to your app. Android uses the standard precompiled RN AAR;
-its initial mount timing is handled by the library's post-mount observation.
+## Measurement status
 
 The example displays Pending until the first measurement, then Ready even when
 there are no active regions. Compare these states with the overlays rather than
