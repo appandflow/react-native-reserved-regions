@@ -60,6 +60,10 @@ jobs:
           distribution: zulu
           java-version: '17'
           cache: gradle
+          cache-dependency-path: |
+            **/*.gradle*
+            **/gradle-wrapper.properties
+            example/android/gradle.properties
       - run: ./gradlew :app:assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a
         working-directory: example/android
   ios:
