@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.os.Build
 import android.view.Choreographer
-import android.view.ViewTreeObserver
+import android.view.WindowInsets
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import androidx.window.WindowSdkExtensions
@@ -26,13 +26,13 @@ import kotlin.math.min
 internal typealias RegionsChangeHandler = (ReservedRegionsView, List<ReservedRegion>) -> Unit
 
 @OptIn(UnstableReactNativeAPI::class)
-class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeObserver.OnPreDrawListener, UIManagerListener {
+class ReservedRegionsView(context: Context) : ReactViewGroup(context), UIManagerListener {
   private var uiManager: UIManager? = null
   private var tracker: WindowInfoTrackerCallbackAdapter? = null
   private val layoutInfoConsumer = Consumer<WindowLayoutInfo> { info ->
     foldingFeatures = info.displayFeatures.filterIsInstance<FoldingFeature>()
     foldingFeaturesReady = true
-    invalidate()
+    updateRegions()
   }
   private var foldingFeatures: List<FoldingFeature> = emptyList()
   private var foldingFeaturesReady = false
@@ -77,7 +77,6 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
     // mount; didMountItems is the earliest point after the emitter exists and before the event
     // beat. It runs for every mount batch in the app, so it is removed after the first delivery.
     uiManager?.addUIManagerEventListener(this)
-    viewTreeObserver.addOnPreDrawListener(this)
     foldingFeatures = emptyList()
     foldingFeaturesReady = false
     lastRegions = null
@@ -101,7 +100,6 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
     uiManager = null
     tracker?.removeWindowLayoutInfoListener(layoutInfoConsumer)
     tracker = null
-    viewTreeObserver.removeOnPreDrawListener(this)
     ReactChoreographer.getInstance()
       .removeFrameCallback(ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, frameEndCallback)
     eventInFrame = false
@@ -114,15 +112,15 @@ class ReservedRegionsView(context: Context) : ReactViewGroup(context), ViewTreeO
     if (!awaitingFirstMount) updateRegions()
   }
 
-  override fun onPreDraw(): Boolean {
-    updateRegions()
-    return true
+  override fun onApplyWindowInsets(insets: WindowInsets): WindowInsets {
+    val result = super.onApplyWindowInsets(insets)
+    if (!awaitingFirstMount) updateRegions()
+    return result
   }
 
   internal fun setOnRegionsChangeHandler(handler: RegionsChangeHandler) {
     onRegionsChange = handler
     lastRegions = null
-    invalidate()
   }
 
   private fun updateRegions(): Boolean {
