@@ -84,7 +84,7 @@ function Example() {
 
   return (
     <View style={styles.screen}>
-      <SafeAreaProvider
+      <View
         style={[
           styles.provider,
           (layout === 'Inset 24' || layout === 'Content box') && styles.inset,
@@ -92,9 +92,11 @@ function Example() {
         ]}
       >
         <ReservedRegionsProvider style={[styles.regionProvider, layout === 'Shift 40' && styles.shifted]}>
-          <RegionInspector />
+          <SafeAreaProvider>
+            <RegionInspector />
+          </SafeAreaProvider>
         </ReservedRegionsProvider>
-      </SafeAreaProvider>
+      </View>
       <View style={[styles.controls, { bottom: Math.max(insets.bottom, 16) }]}>
         {layouts.map((option) => (
           <Pressable
