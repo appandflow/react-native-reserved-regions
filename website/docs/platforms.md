@@ -75,6 +75,9 @@ reports new folding features and when window insets reach the provider, which
 covers display cutout changes unless an ancestor consumes the insets. Scrolling,
 moving an ancestor or transforming the provider does not trigger a measurement.
 Older WindowManager extensions may await their first callback.
+When a measured provider is detached and re-attached, for example by a list's
+`removeClippedSubviews`, it re-measures only if its frame in its parent, the
+folding features or the display cutout changed while it was detached.
 
 On iOS, the provider re-measures when its own layout changes, including a move
 that keeps its size, when it moves into a window, and on hinge updates. Scrolling
