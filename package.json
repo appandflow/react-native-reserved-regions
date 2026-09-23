@@ -77,8 +77,8 @@
     "typescript": "7.0.2"
   },
   "peerDependencies": {
-    "react": ">=19.1.0",
-    "react-native": ">=0.80.0"
+    "react": "*",
+    "react-native": "*"
   },
   "jest": {
     "modulePathIgnorePatterns": [
