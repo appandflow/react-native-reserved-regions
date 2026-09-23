@@ -131,6 +131,10 @@ native evidence is an explicit release limitation, not a passing check.
 - Interrupted publish: first query the exact registry version. The workflow skips
   an already-existing version and verifies its dist-tag. It refuses registry
   lookup errors other than E404 before publishing.
+- Failed verification after a `+ react-native-reserved-regions@X.Y.Z` publish line:
+  npm can take several minutes to expose a new version. Query the registry
+  before anything else. Once `npm view` returns the version, rerunning the
+  workflow only re-verifies it, because it skips an existing version.
 - A newer release has moved the dist-tag: do not rerun an old release to move it
   backwards. Verify the older version separately and preserve the newer tag.
 - A release cannot be overwritten on npm. Fix the code and publish a new version.
