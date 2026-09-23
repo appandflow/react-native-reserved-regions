@@ -66,7 +66,7 @@ Android takes its first measurement after Fabric mounts the view, when its event
 emitter is available and before React Native's event beat, and delivers it
 synchronously so gated content mounts with a measured snapshot. Later changes are
 regular events that React receives at the next event beat; when several changes
-arrive before that beat, React receives the latest. They are not synchronous
+arrive before that beat, React ends with the latest. They are not synchronous
 because React Native's `FabricUIManager` accepts one synchronous event per view
 and event name per frame and drops the rest, and a rotation changes the regions
 more than once in a frame. Later React relayouts are measured in the Android

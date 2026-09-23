@@ -8,8 +8,8 @@ description: Install the package and check native platform requirements.
 ## Release status
 
 `0.1.0` is the first stable release. It includes optional readiness gating,
-hinge-driven iOS region refreshes, and cutout support. The first measurement
-requests synchronous delivery; see [measurement timing](./performance.md) for its limits. The repository [example](./example.md)
+hinge-driven iOS region refreshes, and cutout support. iOS events and the first Android
+measurement request synchronous delivery; see [measurement timing](./performance.md) for its limits. The repository [example](./example.md)
 remains useful for testing native behavior on supported devices and simulators.
 
 ```sh
