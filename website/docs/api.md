@@ -8,10 +8,12 @@ All public exports come from `react-native-reserved-regions`.
 ## ReservedRegionsProvider
 
 ```ts
-function ReservedRegionsProvider(props: ViewProps): React.JSX.Element;
+function ReservedRegionsProvider(
+  props: ViewProps & { ref?: React.Ref<React.ComponentRef<typeof View>> },
+): React.JSX.Element;
 ```
 
-A native view that supplies active reserved regions to descendants. It accepts React Native `ViewProps`. Give it explicit dimensions or a layout style such as `flex: 1` so there is an area to measure.
+A native view that supplies active reserved regions to descendants. It accepts React Native `ViewProps` and a `ref` to the native view, which you can use like a `View` ref, for example to call `measure`. Give it explicit dimensions or a layout style such as `flex: 1` so there is an area to measure.
 
 Each provider maintains its own measurements. A nested provider replaces the context for its descendants.
 

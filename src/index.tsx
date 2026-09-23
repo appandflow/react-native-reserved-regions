@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { ViewProps } from 'react-native';
+import type { View, ViewProps } from 'react-native';
 import { ReservedRegionsView } from './ReservedRegionsView';
 import type { RegionsChangeEvent } from './ReservedRegionsViewNativeComponent';
 
@@ -32,6 +32,12 @@ export type ReservedRegion =
       frame: ReservedRegionFrame;
     }>;
 
+/** Props for ReservedRegionsProvider. */
+type ReservedRegionsProviderProps = ViewProps & {
+  /** Receives the provider's native view, for example to call `measure`. */
+  ref?: React.Ref<React.ComponentRef<typeof View>>;
+};
+
 type ReservedRegionsSnapshot = Readonly<{
   regions: readonly ReservedRegion[];
   isReady: boolean;
@@ -40,7 +46,7 @@ type ReservedRegionsSnapshot = Readonly<{
 const ReservedRegionsContext = React.createContext<ReservedRegionsSnapshot | null>(null);
 
 /** Makes active reserved regions available to descendants in provider coordinates. */
-export function ReservedRegionsProvider({ children, ...props }: ViewProps): React.JSX.Element {
+export function ReservedRegionsProvider({ children, ...props }: ReservedRegionsProviderProps): React.JSX.Element {
   const [snapshot, setSnapshot] = React.useState<ReservedRegionsSnapshot>({ regions: [], isReady: false });
   const onRegionsChange = React.useCallback((event: { nativeEvent: RegionsChangeEvent }) => {
     const regions = event.nativeEvent.regions.flatMap((region): ReservedRegion[] => {

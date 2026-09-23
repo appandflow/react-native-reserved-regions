@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { beforeEach, expect, it, jest } from '@jest/globals';
+import { View } from 'react-native';
 import { act, create } from 'react-test-renderer';
 import {
   ReservedRegionsGate,
@@ -18,13 +19,16 @@ jest.mock('../ReservedRegionsView', () => ({
     children,
     onRegionsChange,
     testID = 'default',
+    ref,
   }: {
     children: React.ReactNode;
     onRegionsChange: Handler;
     testID?: string;
+    ref?: React.Ref<React.ComponentRef<typeof View>>;
   }) => {
     mockHandlers.set(testID, onRegionsChange);
-    return children;
+    const { View: MockView } = jest.requireActual<typeof import('react-native')>('react-native');
+    return <MockView ref={ref}>{children}</MockView>;
   },
 }));
 beforeEach(() => mockHandlers.clear());
@@ -157,6 +161,16 @@ it('scopes readiness to the nearest provider and resets it for a newly mounted p
   await act(() => renderer.update(tree(1)));
   expect(observed.get('inner')).toEqual({ regions: [], isReady: false });
   expect(observed.get('outer')).toEqual({ regions: [division], isReady: true });
+  await act(() => renderer.unmount());
+});
+
+it('attaches a ref to the provider view', async () => {
+  const ref = React.createRef<React.ComponentRef<typeof View>>();
+  let renderer: ReturnType<typeof create>;
+  await act(() => {
+    renderer = create(<ReservedRegionsProvider ref={ref} />);
+  });
+  expect(ref.current).toBeInstanceOf(View);
   await act(() => renderer.unmount());
 });
 
