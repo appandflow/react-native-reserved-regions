@@ -119,8 +119,9 @@ For CocoaPods, use a Ruby version compatible with `example/Gemfile`, then run
 
 To test same-frame delivery of the first iOS event, apply
 [react/react-native#58530](https://github.com/react/react-native/pull/58530) to the
-example's React Native manually and run `pod install` with `RCT_USE_PREBUILT_RNCORE=0`;
-the prebuilt React Native core does not contain that change.
+example's React Native manually, for example with `pnpm patch react-native`, and
+reinstall pods with `RCT_USE_PREBUILT_RNCORE=0`; the prebuilt React Native core does
+not contain that change.
 
 ## Pull requests
 
