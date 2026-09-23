@@ -4,7 +4,7 @@ Provider-scoped display divisions and occlusions for React Native's New Architec
 
 ## Requirements
 
-- React Native 0.80 or newer with the New Architecture (Fabric); only 0.88.0-rc.1 is tested
+- React Native 0.80 or newer with the New Architecture (Fabric)
 - iOS 27.1 SDK and runtime for UIKit reserved regions; older SDKs compile out observation and older runtimes report an empty list
 - Android 7.0 (API 24) or newer; folding features require a device supported by Jetpack WindowManager
 
