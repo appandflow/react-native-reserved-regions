@@ -49,6 +49,17 @@ using namespace facebook::react;
   [self setNeedsLayout];
 }
 
+- (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
+           oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
+{
+  [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+  // React Native's UIView+ComponentViewProtocol applies layout through center and bounds; an origin-only change
+  // does not trigger layoutSubviews.
+  if (layoutMetrics.frame.origin != oldLayoutMetrics.frame.origin) {
+    [self setNeedsLayout];
+  }
+}
+
 - (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter
 {
   [super updateEventEmitter:eventEmitter];

@@ -1,8 +1,8 @@
 #import <React/RCTViewComponentView.h>
 #import <UIKit/UIKit.h>
 
-#ifndef ReservedRegionsViewNativeComponent_h
-#define ReservedRegionsViewNativeComponent_h
+#ifndef ReservedRegionsView_h
+#define ReservedRegionsView_h
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,4 +11,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-#endif /* ReservedRegionsViewNativeComponent_h */
+#endif /* ReservedRegionsView_h */

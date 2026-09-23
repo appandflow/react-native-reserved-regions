@@ -70,7 +70,7 @@ out when those declarations are absent. Test older-runtime fallback separately
 from the iOS 27.1 implementation. A generic simulator build in CI verifies
 compilation; it does not prove Duo behavior.
 
-The example offers full-screen, inset and content-box providers and displays
+The example offers full-screen, shifted, inset and content-box providers and displays
 safe-area-context values for comparison. Verify provider-relative coordinates,
 clipping on Android, empty results outside a region, and line-shaped divisions.
 On Android, use a foldable emulator to exercise native folding features and a

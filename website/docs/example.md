@@ -48,6 +48,7 @@ The bottom controls change the measured view:
 | Mode        | Provider bounds                                                                         |
 | ----------- | --------------------------------------------------------------------------------------- |
 | Full screen | Fills the root view.                                                                    |
+| Shift 40    | Fills the root view, moved 40 points right without changing its size.                   |
 | Inset 24    | Insets top, left, and right by 24 points; leaves 100 points at the bottom for controls. |
 | Content box | Uses the same side and bottom insets, with the top at 180 points.                       |
 
