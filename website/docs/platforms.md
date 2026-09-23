@@ -66,8 +66,11 @@ including ancestor scrolling and native window changes; those measurements can
 reach React in a subsequent frame. Older WindowManager extensions may await their
 first callback.
 
-The iOS example uses an unmerged React Native event-beat patch to test layout-time
-synchronous delivery. The published package does not patch an application's React
-Native installation. See [the example setup](./example.md#react-native-event-beat-patch).
+iOS measures in `layoutSubviews`. React Native processes a synchronous event
+requested there one frame later unless it includes [react/react-native#58530](https://github.com/react/react-native/pull/58530),
+which processes the event beat in the frame that requested it. That change is merged
+into React Native's `main` branch but is not in the 0.88 release candidates. The
+repository example applies it as a patch; the published package does not patch
+your app's React Native. See [the example setup](./example.md#react-native-event-beat-patch).
 Readiness means the provider has completed a measurement; it is not a guarantee
 that every layout change is visible in its first frame.

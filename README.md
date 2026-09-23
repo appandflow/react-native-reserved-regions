@@ -22,20 +22,25 @@ On iOS, install pods in your app's `ios` directory. Android links automatically 
 ## Usage
 
 ```tsx
-import { ReservedRegionsProvider, useReservedRegions, useReservedRegionsReady } from 'react-native-reserved-regions';
+import { View } from 'react-native';
+import { ReservedRegionsProvider, useReservedRegions } from 'react-native-reserved-regions';
 
 function Screen() {
-  const regions = useReservedRegions();
-  const isReady = useReservedRegionsReady();
-  if (!isReady) return null;
-  return regions.map((region, index) => {
-    if (region.kind === 'division') {
-      console.log(region.frame, region.occludesContent);
-    } else {
-      console.log(region.frame);
-    }
-    return null;
-  });
+  const fold = useReservedRegions().find(
+    (region) => region.kind === 'division' && region.frame.height > region.frame.width,
+  );
+  if (!fold) return <Detail />;
+  return (
+    <View style={{ flex: 1, flexDirection: 'row' }}>
+      <View style={{ width: fold.frame.x }}>
+        <List />
+      </View>
+      <View style={{ width: fold.frame.width }} />
+      <View style={{ flex: 1 }}>
+        <Detail />
+      </View>
+    </View>
+  );
 }
 
 export default function App() {
@@ -91,26 +96,14 @@ The library reports geometry and does not reposition content. Normal safe area i
 ## Measurement timing
 
 Native events request synchronous delivery. Android measures after Fabric mounting
-and also observes pre-draw changes. The iOS example tests same-frame delivery with
-an [upstream React Native event-beat patch](docs/workflow.md#react-native-event-beat-test-patch).
-That example patch is not installed into consuming apps. Readiness indicates a
-completed measurement, not a universal first-frame guarantee.
-
-### Readiness-gated animated content
-
-On the tested RN `0.88.0-rc.1` Android stack, conditionally mounting Reanimated
-`4.7.0` content when `useReservedRegionsReady()` becomes true can throw
-`__requestMapperRunFinalizer` is undefined: Worklets `0.13.0` can run synchronous
-UI work ahead of queued mapper initialization. The combined hinges example uses
-an [example-only Worklets FIFO patch](https://github.com/appandflow/react-native-hinges/blob/main/patches/react-native-worklets%400.13.0.patch).
-Installing either library does not patch a consuming app's Worklets dependency.
-Keeping the animated subtree mounted avoided this failure in the tested case;
-apps that gate its mount need to apply the patch, rebuild the native app, and
-validate it themselves.
+and also observes pre-draw changes. On iOS, same-frame delivery requires React Native
+[#58530](https://github.com/react/react-native/pull/58530); see
+[measurement timing](https://appandflow.github.io/react-native-reserved-regions/docs/platforms#measurement-timing).
+Readiness indicates a completed measurement, not a
+universal first-frame guarantee.
 
 The [performance guide](https://appandflow.github.io/react-native-reserved-regions/docs/performance)
-explains provider placement and optional readiness gating. `ReservedRegionsGate`
-is included starting with `0.1.0-alpha.3`.
+explains provider placement and optional readiness gating.
 
 ## Development
 

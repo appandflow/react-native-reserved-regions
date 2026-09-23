@@ -19,8 +19,6 @@ Each provider maintains its own measurements. A nested provider replaces the con
 
 ## ReservedRegionsGate
 
-Available starting with `0.1.0-alpha.3`.
-
 ```ts
 function ReservedRegionsGate(props: { children?: React.ReactNode }): React.ReactNode;
 ```
