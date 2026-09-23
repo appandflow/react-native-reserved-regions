@@ -6,7 +6,7 @@ permissions:
   contents: read
 jobs:
   duo:
-    runs-on: xcode-27
+    runs-on: xcode-27-xlarge
     timeout-minutes: 75
     env:
       LANG: en_US.UTF-8
@@ -46,15 +46,11 @@ jobs:
           build | tail -n 60; test "${PIPESTATUS[0]}" = 0
         shell: bash
       - run: npm install -g agent-device@0.21.12
-      - name: Free disk and record host resources
+      - name: Record host resources
         timeout-minutes: 10
         run: |
           mkdir -p e2e/pre
           { sysctl hw.memsize hw.ncpu; vm_stat | head -8; df -h / /System/Volumes/Data; xcrun simctl runtime list; } > e2e/pre/before.txt 2>&1
-          sudo rm -rf ~/Library/Android /Applications/Xcode_27.2_beta.app
-          xcrun simctl delete all || true
-          xcrun simctl runtime list -j | jq -r 'to_entries[] | select(.value.version != "27.1") | .key' | xargs -n1 xcrun simctl runtime delete || true
-          { df -h / /System/Volumes/Data; xcrun simctl runtime list; } > e2e/pre/after-free.txt 2>&1
           cat e2e/pre/*.txt
       - uses: actions/upload-artifact@v4
         with:
