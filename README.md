@@ -1,15 +1,12 @@
 # react-native-reserved-regions
 
-Provider-scoped display divisions and occlusions for React Native's New Architecture.
+Provider-scoped display divisions and occlusions for React Native.
 
 ## Requirements
 
 - React Native 0.80 or newer with the New Architecture (Fabric)
 - iOS 27.1 SDK and runtime for UIKit reserved regions; older SDKs compile out observation and older runtimes report an empty list
 - Android 7.0 (API 24) or newer; folding features require a device supported by Jetpack WindowManager
-
-The example app uses React Native 0.88.0-rc.1.
-Its iOS target adopts `UISceneDelegate` because the RC template currently crashes on iOS 27 without it ([React Native issue #58606](https://github.com/react/react-native/issues/58606)).
 
 ## Installation
 
