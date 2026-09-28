@@ -1,3 +1,78 @@
+@font-face {
+  font-family: "Inter";
+  src: url("../../font/InterVariable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../../font/JetBrainsMono-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+.sectionHeading {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: -0.02em;
+}
+
+.reservedRegionsCode {
+  box-shadow: none !important;
+  background: #fafafa !important;
+  border: 1px solid #e1dedef6;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.reservedRegionsCode pre {
+  background: #fafafa !important;
+}
+
+.reservedRegionsCode code,
+.reservedRegionsCode .token-line,
+.reservedRegionsCode .token {
+  color: #663cb5 !important;
+}
+
+.reservedRegionsCode .token.plain,
+.reservedRegionsCode .token.variable,
+.reservedRegionsCode .token.parameter {
+  color: #008cff !important;
+}
+
+.reservedRegionsCode .token.keyword,
+.reservedRegionsCode .token.operator {
+  color: #f97583 !important;
+}
+
+.reservedRegionsCode .token.string {
+  color: #ffab70 !important;
+}
+
+.description {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+  letter-spacing: -0.01em;
+}
+
+.reservedRegionsHome {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.reservedRegionsHome code {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
 :root {
   --ifm-color-primary: #315de0;
   --ifm-color-primary-dark: #204ccd;
@@ -6,7 +81,8 @@
   --ifm-color-primary-light: #496fe4;
   --ifm-color-primary-lighter: #5578e6;
   --ifm-color-primary-lightest: #7b96ec;
-  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ifm-font-family-base:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --ifm-heading-font-weight: 650;
   --ifm-font-size-base: 16px;
   --ifm-line-height-base: 1.7;
@@ -23,7 +99,7 @@
   --rr-subtle: #edf1f8;
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   --ifm-color-primary: #9bb6ff;
   --ifm-color-primary-dark: #759aff;
   --ifm-color-primary-darker: #618bff;
