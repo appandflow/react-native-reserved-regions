@@ -1,3 +1,5 @@
+![Reserved Regions for React Native, maintained by App&Flow](docs/assets/github-banner.jpg)
+
 # react-native-reserved-regions
 
 Provider-scoped display divisions and occlusions for React Native.
@@ -19,16 +21,20 @@ On iOS, install pods in your app's `ios` directory. Android links automatically 
 ## Usage
 
 ```tsx
-import { View } from 'react-native';
-import { ReservedRegionsProvider, useReservedRegions } from 'react-native-reserved-regions';
+import { View } from "react-native";
+import {
+  ReservedRegionsProvider,
+  useReservedRegions,
+} from "react-native-reserved-regions";
 
 function Screen() {
   const fold = useReservedRegions().find(
-    (region) => region.kind === 'division' && region.frame.height > region.frame.width,
+    (region) =>
+      region.kind === "division" && region.frame.height > region.frame.width,
   );
   if (!fold) return <Detail />;
   return (
-    <View style={{ flex: 1, flexDirection: 'row' }}>
+    <View style={{ flex: 1, flexDirection: "row" }}>
       <View style={{ width: fold.frame.x }}>
         <List />
       </View>
@@ -56,12 +62,12 @@ The public type is a tagged union:
 ```ts
 type ReservedRegion =
   | {
-      kind: 'division';
+      kind: "division";
       frame: { x: number; y: number; width: number; height: number };
       occludesContent: boolean;
     }
   | {
-      kind: 'occlusion';
+      kind: "occlusion";
       frame: { x: number; y: number; width: number; height: number };
     };
 ```
