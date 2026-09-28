@@ -78,9 +78,36 @@ const concepts = [
   },
 ];
 
-function Illustration({ file, alt, width, height, style }) {
+function Illustration({ file, alt, width, height, style, reveal = false }) {
+  const imageRef = useRef(null);
+
+  useEffect(() => {
+    if (!reveal || !("IntersectionObserver" in window)) return;
+
+    const image = imageRef.current;
+    image.dataset.reveal = "pending";
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          image.dataset.reveal = "visible";
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 },
+    );
+
+    observer.observe(image);
+    return () => {
+      observer.disconnect();
+      delete image.dataset.reveal;
+    };
+  }, [reveal]);
+
   return (
     <img
+      ref={imageRef}
+      className={reveal ? "illustrationReveal" : undefined}
       src={useBaseUrl(`/img/${file}`)}
       alt={alt}
       width={width}
@@ -160,7 +187,7 @@ export default function Home() {
             <Link to="/" aria-label="Reserved Regions home">
               <Illustration
                 file="logo.png"
-                alt=""
+                alt="logo"
                 width={96}
                 height={96}
                 style={{ width: 32, height: 32 }}
@@ -178,13 +205,12 @@ export default function Home() {
               style={{
                 color: "#828282",
                 display: "flex",
-                // alignItems: "center",
                 gap: 5,
               }}
             >
               <Illustration
                 file="github-grey.png"
-                alt=""
+                alt="github grey logo"
                 width={48}
                 height={48}
                 style={{ width: 16, height: 16, flexShrink: 0 }}
@@ -201,11 +227,11 @@ export default function Home() {
                   margin: "0 0 16px",
                   color: "#000",
                   fontSize: "clamp(30px, 5vw, 36px)",
-                  fontFamily: '"GT Maru Trial", Inter, sans-serif',
+                  fontFamily: '"GT Maru", Inter, sans-serif',
                   fontWeight: 700,
                   lineHeight: 1.12,
                   letterSpacing: "-0.8px",
-                  width: 320,
+                  width: 350,
                 }}
               >
                 Reserved Regions for React Native
@@ -216,6 +242,7 @@ export default function Home() {
               </p>
               <Illustration
                 file="devices.png"
+                reveal
                 alt="Foldable displays showing a central division and camera cutout."
                 width={1557}
                 height={712}
@@ -230,7 +257,11 @@ export default function Home() {
                   gap: 16,
                 }}
               >
-                <Link to="/docs/installation" style={buttonStyle}>
+                <Link
+                  to="/docs/installation"
+                  className="buttonStyle"
+                  style={buttonStyle}
+                >
                   Get started
                 </Link>
                 <div
@@ -268,7 +299,7 @@ export default function Home() {
                     >
                       <img
                         src={copyIcon}
-                        alt=""
+                        alt="Copy icon"
                         width={16}
                         height={16}
                         style={{
@@ -335,11 +366,16 @@ export default function Home() {
                   <p className="description" style={{ margin: "16px 0" }}>
                     {concept.description}
                   </p>
-                  <Link to={concept.to} style={linkStyle}>
-                    {concept.label} ↗
+                  <Link
+                    to={concept.to}
+                    className="learnMoreLink"
+                    style={linkStyle}
+                  >
+                    {concept.label} <span aria-hidden="true">↗</span>
                   </Link>
                   <Illustration
                     file={concept.image}
+                    reveal
                     alt={concept.alt}
                     width={concept.width}
                     height={concept.height}
@@ -367,8 +403,12 @@ export default function Home() {
                   insets when your screen needs both edge spacing and
                   information about its interior.
                 </p>
-                <Link to="/docs/safe-area" style={linkStyle}>
-                  Learn more ↗
+                <Link
+                  to="/docs/safe-area"
+                  className="learnMoreLink"
+                  style={linkStyle}
+                >
+                  Learn more <span aria-hidden="true">↗</span>
                 </Link>
               </div>
 
@@ -383,11 +423,12 @@ export default function Home() {
                 </p>
                 <Link
                   to="/docs/example"
+                  className="buttonStyle"
                   style={{ ...buttonStyle, fontSize: 14, gap: 8 }}
                 >
                   <Illustration
                     file="github-white.png"
-                    alt=""
+                    alt="Github white logo"
                     width={48}
                     height={48}
                     style={{ width: 16, height: 16 }}
@@ -416,12 +457,7 @@ export default function Home() {
               </Link>
             </span>
             <span aria-hidden="true">·</span>
-            <Link
-              href={`${github}/blob/main/LICENSE`}
-              style={{ color: "#121212" }}
-            >
-              licensed under the MIT License
-            </Link>
+            licensed under the MIT License
           </footer>
         </div>
       </div>

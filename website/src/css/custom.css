@@ -1,21 +1,33 @@
 @font-face {
-  font-family: "Inter";
-  src: url("../../font/InterVariable.woff2") format("woff2");
+  font-family: 'GT Maru';
+  src: url('../../font/GT-Maru-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+.reservedRegionsHome h1 {
+  font-family: 'GT Maru', Inter, sans-serif;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../../font/InterVariable.woff2') format('woff2');
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "JetBrains Mono";
-  src: url("../../font/JetBrainsMono-Regular.woff2") format("woff2");
+  font-family: 'JetBrains Mono';
+  src: url('../../font/JetBrainsMono-Regular.woff2') format('woff2');
   font-style: normal;
   font-weight: 400;
   font-display: swap;
 }
 
 .sectionHeading {
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-style: normal;
   font-size: 16px;
@@ -57,8 +69,124 @@
   color: #ffab70 !important;
 }
 
+.buttonStyle {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.buttonStyle::before {
+  content: '';
+  position: absolute;
+  inset: -50% -10%;
+  background: #008cff;
+  border-radius: 45% 55% 0 0;
+  transform: translateY(100%);
+  transition: transform 700ms ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.buttonStyle:hover::before {
+  transform: translateY(0);
+}
+
+.buttonContent {
+  display: inline-flex;
+  align-items: center;
+  gap: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buttonStyle::before {
+    transition: none;
+  }
+}
+
+.conceptLink {
+  position: relative;
+  display: inline-flex;
+  padding-right: 18px;
+  vertical-align: middle;
+}
+
+.conceptLink:hover {
+  text-decoration: none;
+}
+
+.conceptLinkLabel,
+.conceptArrow {
+  transition:
+    transform 280ms ease-out,
+    opacity 180ms ease-out;
+}
+
+.conceptArrow {
+  position: absolute;
+  top: 0;
+  width: 1em;
+  text-align: center;
+}
+
+.conceptArrowBefore {
+  left: 0;
+  opacity: 0;
+  transform: translateX(-18px);
+}
+
+.conceptArrowAfter {
+  right: 0;
+  opacity: 1;
+}
+
+.conceptLink:is(:hover, :focus-visible) .conceptLinkLabel {
+  transform: translateX(18px);
+}
+
+.conceptLink:is(:hover, :focus-visible) .conceptArrowBefore {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.conceptLink:is(:hover, :focus-visible) .conceptArrowAfter {
+  opacity: 0;
+  transform: translateX(18px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .conceptLinkLabel,
+  .conceptArrow {
+    transition: none;
+  }
+}
+
+.learnMoreLink span {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .learnMoreLink span {
+    transition: transform 180ms ease;
+  }
+
+  .learnMoreLink:is(:hover, :focus-visible) span {
+    transform: translate(2px, -2px);
+  }
+
+  .illustrationReveal {
+    transition:
+      opacity 600ms ease,
+      translate 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .illustrationReveal[data-reveal='pending'] {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+
 .description {
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 400;
   font-size: 14px;
   line-height: 150%;
@@ -66,11 +194,11 @@
 }
 
 .reservedRegionsHome {
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .reservedRegionsHome code {
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 :root {
@@ -81,8 +209,7 @@
   --ifm-color-primary-light: #496fe4;
   --ifm-color-primary-lighter: #5578e6;
   --ifm-color-primary-lightest: #7b96ec;
-  --ifm-font-family-base:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --ifm-heading-font-weight: 650;
   --ifm-font-size-base: 16px;
   --ifm-line-height-base: 1.7;
@@ -99,7 +226,7 @@
   --rr-subtle: #edf1f8;
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --ifm-color-primary: #9bb6ff;
   --ifm-color-primary-dark: #759aff;
   --ifm-color-primary-darker: #618bff;
