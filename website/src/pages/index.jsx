@@ -1,7 +1,7 @@
-import ConceptCard from '../../component/ConceptCard';
-import Illustration from '../../component/Illustration';
-import styles from './index.module.css';
-import shared from '../../component/shared.module.css';
+import ConceptCard from '../component/ConceptCard';
+import Illustration from '../component/Illustration';
+import styles from '../css/index.module.css';
+import shared from '../css/shared.module.css';
 import React, { useEffect, useRef, useState } from 'react';
 import LayoutProvider from '@theme/Layout/Provider';
 import SkipToContent from '@theme/SkipToContent';

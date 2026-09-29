@@ -1,8 +1,8 @@
 import React from 'react';
 import Link from '@docusaurus/Link';
 import Illustration from './Illustration';
-import styles from './ConceptCard.module.css';
-import shared from './shared.module.css';
+import styles from '../css/ConceptCard.module.css';
+import shared from '../css/shared.module.css';
 
 export default function ConceptCard({ concept, isFirst }) {
   return (

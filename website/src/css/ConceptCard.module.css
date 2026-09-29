@@ -8,6 +8,16 @@
   margin: 16px 0;
 }
 
+.concept a:hover {
+  color: #008cff;
+}
+
 .conceptIllustration {
-  margin: 40px auto 0;
+  margin: 64px auto 0;
+}
+
+@media (width <= 600px) {
+  .conceptIllustration {
+    margin: 40px auto 0;
+  }
 }
