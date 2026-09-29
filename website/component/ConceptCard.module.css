@@ -1,0 +1,13 @@
+.concept {
+  padding: 28px 24px 0;
+  border: 1px solid rgba(18, 18, 18, 0.1);
+  overflow: hidden;
+}
+
+.conceptDescription {
+  margin: 16px 0;
+}
+
+.conceptIllustration {
+  margin: 40px auto 0;
+}

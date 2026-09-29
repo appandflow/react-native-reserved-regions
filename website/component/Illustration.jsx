@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import styles from '../src/pages/index.module.css';
+import styles from './Illustration.module.css';
 
 export default function Illustration({ file, alt, width, height, style, reveal = false, className = '' }) {
   const imageRef = useRef(null);

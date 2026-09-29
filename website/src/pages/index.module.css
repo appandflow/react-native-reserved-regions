@@ -1,14 +1,3 @@
-.heading {
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-style: normal;
-  font-size: 16px;
-  line-height: 100%;
-  letter-spacing: -0.02em;
-  margin: 0;
-  color: #121212;
-}
-
 .codeBlock {
   box-shadow: none !important;
   background: #fafafa !important;
@@ -19,6 +8,18 @@
 
 .codeBlock pre {
   background: #fafafa !important;
+  overflow-x: auto;
+}
+
+.codeBlock pre,
+.codeBlock code {
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+
+.codeBlock button[aria-label='Toggle word wrap'] {
+  display: none;
 }
 
 .codeBlock code,
@@ -81,41 +82,7 @@
   }
 }
 
-.link span {
-  display: inline-block;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .link span {
-    transition: transform 180ms ease;
-  }
-
-  .link:is(:hover, :focus-visible) span {
-    transform: translate(2px, -2px);
-  }
-
-  .illustrationReveal {
-    transition:
-      opacity 600ms ease,
-      translate 600ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .illustrationReveal[data-reveal='pending'] {
-    opacity: 0;
-    translate: 0 12px;
-  }
-}
-
-.description {
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 150%;
-  letter-spacing: -0.01em;
-}
-
 .page {
-  font-family: 'Inter', system-ui, sans-serif;
   min-height: 100vh;
   background: #fff;
   color: #121212;
@@ -131,21 +98,18 @@
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
-.textLink {
-  color: #008cff;
-}
-
-.illustration {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
 .container {
   width: calc(100% - 48px);
   max-width: 520px;
   margin: 0 auto;
   padding: 120px 0 160px;
+}
+
+@media (width <= 600px) {
+  .container {
+    width: calc(100% - 40px);
+    padding: 20px 0 160px;
+  }
 }
 
 .navigation {
@@ -248,38 +212,24 @@
   margin-top: 32px;
 }
 
-.concept {
-  padding: 32px 32px 0;
-  border: 1px solid rgba(18, 18, 18, 0.1);
-  overflow: hidden;
-}
-
-.conceptDescription {
-  margin: 16px 0;
-}
-
-.conceptIllustration {
-  margin: 64px auto 0;
-}
-
 .usage {
-  margin-top: 32px;
+  margin-top: 64px;
 }
 
 .usageIntro {
-  padding: 40px 0;
+  padding: 20px 0;
 }
 
 .usageDescription {
-  margin: 0 0 8px;
+  margin: 0 0 20px;
 }
 
 .example {
-  padding: 32px 0;
+  padding: 20px 0;
 }
 
 .exampleDescription {
-  margin: 0 0 16px;
+  margin: 0 0 20px;
 }
 
 .exampleButton {

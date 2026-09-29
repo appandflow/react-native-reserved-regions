@@ -1,6 +1,7 @@
 import ConceptCard from '../../component/ConceptCard';
 import Illustration from '../../component/Illustration';
 import styles from './index.module.css';
+import shared from '../../component/shared.module.css';
 import React, { useEffect, useRef, useState } from 'react';
 import LayoutProvider from '@theme/Layout/Provider';
 import SkipToContent from '@theme/SkipToContent';
@@ -27,6 +28,7 @@ const concepts = [
     label: 'Coordinates',
     to: '/docs/coordinates',
     image: 'coordinates.png',
+    maxWidth: 456,
     width: 1368,
     height: 599,
     alt: 'A nested provider establishes coordinates relative to its container.',
@@ -38,6 +40,7 @@ const concepts = [
     label: 'API reference',
     to: '/docs/api',
     image: 'occlusions.png',
+    maxWidth: 456,
     width: 1368,
     height: 640,
     alt: 'Phone displays with camera occlusions and usable content areas.',
@@ -49,6 +52,7 @@ const concepts = [
     label: 'Platform support',
     to: '/docs/platforms',
     image: 'platforms.png',
+    maxWidth: 448,
     width: 1344,
     height: 588,
     alt: 'Foldable and conventional devices on iOS and Android.',
@@ -106,7 +110,7 @@ export default function Home() {
           <main id={SkipToContentFallbackId}>
             <header>
               <h1 className={styles.title}>Reserved Regions for React Native</h1>
-              <p className={[styles.description, styles.intro].join(' ')}>
+              <p className={[shared.description, styles.intro].join(' ')}>
                 Get the bounds of folds, camera cutouts, and system UI on iOS and Android. Use them to keep content and
                 controls clear.
               </p>
@@ -189,16 +193,16 @@ export default function Home() {
             </section>
 
             <section aria-labelledby="usage-title" className={styles.usage}>
-              <h2 id="usage-title" className={styles.heading}>
+              <h2 id="usage-title" className={shared.heading}>
                 Usage
               </h2>
               <div className={styles.usageIntro}>
-                <p className={[styles.description, styles.usageDescription].join(' ')}>
+                <p className={[shared.description, styles.usageDescription].join(' ')}>
                   Wrap a view in ReservedRegionsProvider and read its regions with useReservedRegions. Pair region
                   frames with safe area insets when your screen needs both edge spacing and information about its
                   interior.
                 </p>
-                <Link to="/docs/safe-area" className={[styles.link, styles.textLink].join(' ')}>
+                <Link to="/docs/safe-area" className={[shared.link, shared.textLink].join(' ')}>
                   Learn more <span aria-hidden="true">↗</span>
                 </Link>
               </div>
@@ -208,7 +212,7 @@ export default function Home() {
               </CodeBlock>
 
               <div className={styles.example}>
-                <p className={[styles.description, styles.exampleDescription].join(' ')}>
+                <p className={[shared.description, styles.exampleDescription].join(' ')}>
                   Compare full-screen, inset, and content-box providers, with safe area insets alongside reserved
                   regions.
                 </p>
@@ -229,7 +233,7 @@ export default function Home() {
           <footer className={styles.footer}>
             <span>
               Made by{' '}
-              <Link href="https://appandflow.com" className={styles.textLink}>
+              <Link href="https://appandflow.com" className={shared.textLink}>
                 App&amp;Flow
               </Link>
             </span>

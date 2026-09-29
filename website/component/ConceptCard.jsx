@@ -1,7 +1,8 @@
 import React from 'react';
 import Link from '@docusaurus/Link';
 import Illustration from './Illustration';
-import styles from '../src/pages/index.module.css';
+import styles from './ConceptCard.module.css';
+import shared from './shared.module.css';
 
 export default function ConceptCard({ concept, isFirst }) {
   return (
@@ -11,9 +12,9 @@ export default function ConceptCard({ concept, isFirst }) {
       }}
       className={styles.concept}
     >
-      <h2 className={styles.heading}>{concept.title}</h2>
-      <p className={[styles.description, styles.conceptDescription].join(' ')}>{concept.description}</p>
-      <Link to={concept.to} className={[styles.link, styles.textLink].join(' ')}>
+      <h2 className={shared.heading}>{concept.title}</h2>
+      <p className={[shared.description, styles.conceptDescription].join(' ')}>{concept.description}</p>
+      <Link to={concept.to} className={[shared.link, shared.textLink].join(' ')}>
         {concept.label} <span aria-hidden="true">↗</span>
       </Link>
       <Illustration
@@ -23,7 +24,7 @@ export default function ConceptCard({ concept, isFirst }) {
         width={concept.width}
         height={concept.height}
         style={{
-          maxWidth: concept.image === 'platforms.png' ? 448 : 456,
+          maxWidth: concept.maxWidth,
         }}
         className={styles.conceptIllustration}
       />

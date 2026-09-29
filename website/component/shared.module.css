@@ -1,0 +1,36 @@
+.heading {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: #121212;
+}
+
+.description {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+  letter-spacing: -0.01em;
+}
+
+.textLink {
+  color: #008cff;
+}
+
+.link span {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .link span {
+    transition: transform 180ms ease;
+  }
+
+  .link:is(:hover, :focus-visible) span {
+    transform: translate(2px, -2px);
+  }
+}
