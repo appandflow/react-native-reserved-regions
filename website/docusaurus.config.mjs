@@ -3,7 +3,7 @@ import { themes } from 'prism-react-renderer';
 export default {
   title: 'Reserved Regions',
   tagline: 'Display divisions and occlusions in your React Native view coordinates.',
-  favicon: 'img/mark.svg',
+  favicon: 'img/logo.png',
   url: 'https://appandflow.github.io',
   baseUrl: '/react-native-reserved-regions/',
   organizationName: 'appandflow',

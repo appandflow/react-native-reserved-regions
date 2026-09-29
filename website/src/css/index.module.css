@@ -1,0 +1,263 @@
+.codeBlock {
+  box-shadow: none !important;
+  background: #fafafa !important;
+  border: 1px solid #e1dedef6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.codeBlock pre {
+  background: #fafafa !important;
+  overflow-x: auto;
+}
+
+.codeBlock pre,
+.codeBlock code {
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+
+.codeBlock button[aria-label='Toggle word wrap'] {
+  display: none;
+}
+
+.codeBlock code,
+.codeBlock :global(.token-line),
+.codeBlock :global(.token) {
+  color: #663cb5 !important;
+}
+
+.codeBlock :global(.token.plain),
+.codeBlock :global(.token.variable),
+.codeBlock :global(.token.parameter) {
+  color: #008cff !important;
+}
+
+.codeBlock :global(.token.keyword),
+.codeBlock :global(.token.operator) {
+  color: #f97583 !important;
+}
+
+.codeBlock :global(.token.string) {
+  color: #ffab70 !important;
+}
+
+.button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 40px;
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  inset: -50% -10%;
+  background: #008cff;
+  border-radius: 45% 55% 0 0;
+  transform: translateY(100%);
+  transition: transform 700ms ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.button:hover::before {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button::before {
+    transition: none;
+  }
+}
+
+.page {
+  min-height: 100vh;
+  background: #fff;
+  color: #121212;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  --ifm-heading-color: #121212;
+  --ifm-link-color: #008cff;
+  --ifm-font-family-monospace: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.page code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.container {
+  width: calc(100% - 48px);
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 120px 0 160px;
+}
+
+@media (width <= 600px) {
+  .container {
+    width: calc(100% - 40px);
+    padding: 20px 0 160px;
+  }
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 48px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.logo {
+  width: 32px;
+  height: 32px;
+}
+
+.navLink {
+  color: #828282;
+}
+
+.githubLink {
+  color: #828282;
+  display: flex;
+  gap: 5px;
+}
+
+.githubIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0 0 16px;
+  color: #000;
+  font-size: clamp(30px, 5vw, 36px);
+  font-family: 'GT Maru', Inter, sans-serif;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.8px;
+  width: min(350px, 100%);
+}
+
+.intro {
+  margin: 0;
+}
+
+.heroIllustration {
+  margin: 48px 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.install {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.installCommand {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #828282;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.copyButton {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.copyIcons {
+  display: grid;
+  width: 16px;
+  height: 16px;
+}
+
+.copyIcon {
+  grid-area: 1 / 1;
+  transition: all var(--ifm-transition-fast) ease;
+}
+
+.copySuccess {
+  grid-area: 1 / 1;
+  color: #00d600;
+  transition: all var(--ifm-transition-fast) ease;
+}
+
+.concepts {
+  margin-top: 32px;
+}
+
+.usage {
+  margin-top: 64px;
+}
+
+.usageIntro {
+  padding: 20px 0;
+}
+
+.usageDescription {
+  margin: 0 0 20px;
+}
+
+.example {
+  padding: 20px 0;
+}
+
+.exampleDescription {
+  margin: 0 0 20px;
+}
+
+.exampleButton {
+  font-size: 14px;
+  gap: 8px;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 32px;
+  padding: 16px 0;
+  border-top: 1px solid rgba(18, 18, 18, 0.05);
+  font-size: 12px;
+}
+
+.button:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+.navLink:hover,
+.githubLink:hover {
+  color: #828282;
+}
