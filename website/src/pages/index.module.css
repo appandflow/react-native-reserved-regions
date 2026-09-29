@@ -151,7 +151,7 @@
   font-weight: 700;
   line-height: 1.12;
   letter-spacing: -0.8px;
-  width: 350px;
+  width: min(350px, 100%);
 }
 
 .intro {
