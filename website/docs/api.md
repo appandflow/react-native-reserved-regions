@@ -27,7 +27,7 @@ Renders `null` until the nearest provider has completed its first measurement,
 then renders `children`, including for an empty result. It adds no native view and
 does not suspend. Throws outside a provider, like `useReservedRegionsReady()`.
 Keep the measured view mounted and sized outside the gate. See
-[performance and first render](./performance.md) for placement and tradeoffs.
+[Usage](./usage.md#wait-before-rendering) for an example.
 
 ## useReservedRegions
 

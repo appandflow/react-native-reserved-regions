@@ -27,8 +27,6 @@ description: Set up react-native-reserved-regions.
 
 3. Rebuild your app.
 
-Next, [set up the provider and hook](./usage.md).
-
 :::info Requirements
 
 - **React Native:** 0.80 or later with the New Architecture enabled.
