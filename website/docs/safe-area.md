@@ -3,20 +3,15 @@ title: Alongside safe area context
 description: Compare edge insets with reserved rectangles inside a view.
 ---
 
-Safe area insets and reserved regions answer different layout questions.
+`react-native-safe-area-context` returns four edge insets: top, right, bottom, and left. `react-native-reserved-regions` returns frames for folds, hinges, and occluded areas.
 
-|                  | `react-native-safe-area-context`              | `react-native-reserved-regions`               |
-| ---------------- | --------------------------------------------- | --------------------------------------------- |
-| Geometry         | Four edge distances: top, right, bottom, left | A list of frames and region kinds             |
-| Typical use      | Keep content within safe edges                | Inspect a fold, hinge, or occluded area       |
-| Coordinate scope | Nearest safe area provider                    | Nearest reserved regions provider             |
-| Layout behavior  | Offers hooks and `SafeAreaView`               | Reports geometry; your app chooses the layout |
+A hinge in the middle of a display cannot be represented by edge insets alone. Use both libraries when your layout needs both measurements.
 
-Four edge distances cannot describe every obstruction in the middle of a display. A region list also does not replace normal system bar or keyboard handling. Use both libraries when your screen needs both kinds of information.
+`react-native-safe-area-context` is an optional dependency and must be installed separately.
 
-## Match the provider bounds
+## Using both providers
 
-For a direct comparison, make both provider views occupy the same rectangle:
+Give both providers the same bounds when comparing their measurements:
 
 ```tsx
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -33,6 +28,13 @@ function MeasuredPanel() {
 }
 ```
 
-`PanelContent` can call `useSafeAreaInsets()` and `useReservedRegions()`. These providers add no padding in this example. If you put a padded `SafeAreaView` between them, their measured bounds may differ, and direct numerical comparisons need to account for that.
+Inside `PanelContent`, read the measurements with their respective hooks:
 
-`react-native-safe-area-context` is an optional app dependency. The reserved regions library does not depend on it; the example includes it to show both measurements.
+```tsx
+const insets = useSafeAreaInsets();
+const regions = useReservedRegions();
+```
+
+Each hook reads from its own provider. If the providers have different positions or sizes, account for that difference when comparing their values.
+
+Reserved regions do not report keyboard bounds or provide keyboard avoidance.

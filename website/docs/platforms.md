@@ -5,42 +5,28 @@ description: How UIKit and Jetpack WindowManager map to the public API.
 
 ## iOS
 
-When built with the iOS 27.1 SDK or later and running on iOS 27.1 or later, the provider queries UIKit's active `UIView` reserved regions for the division and occlusion kinds. It passes the default query options, which exclude inactive regions.
+To receive regions on iOS, build your app with the iOS 27.1 SDK or later and run it on iOS 27.1 or later. Older SDKs or iOS versions return an empty region list.
 
-| UIKit result     | JavaScript result                            |
+The library uses UIKit to find folds and occluded areas that overlap the provider’s view. Each region includes its position and size.
+
+| **UIKit region** | **Result**                                   |
 | ---------------- | -------------------------------------------- |
-| Division region  | `kind: 'division'`, `occludesContent: false` |
-| Occlusion region | `kind: 'occlusion'`                          |
+| Division         | `kind: 'division'`, `occludesContent: false` |
+| Occlusion        | `kind: 'occlusion'`                          |
 
-The implementation assumes iOS divisions do not hide content. This is a library mapping, not a separate UIKit occlusion property. Occlusion frames can cover hardware or supported system UI and may include interaction margins.
+Divisions are reported with `occludesContent: false`. They mark a boundary in the display but don’t block your content.
 
-UIKit returns only regions that intersect the provider, with their full frames in provider coordinates. The library does not clip them to the provider bounds.
-
-The implementation calls typed UIKit APIs behind both an SDK compile guard and a runtime availability check:
-
-```objc
-#if defined(__IPHONE_27_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_1
-if (@available(iOS 27.1, *)) {
-  // The typed UIKit queries are compiled only with a supporting SDK.
-}
-#endif
-```
-
-Building with an older SDK compiles out reserved-region observation. Such a build returns empty arrays even on an iOS 27.1 device. A build with a supporting SDK also returns empty arrays on an older runtime. Rebuild with the newer SDK to enable the APIs; a device OS update alone is insufficient.
-
-Region measurements refresh when the provider lays out, moves into a window, or receives a hinge update through `UIHingeInteraction` on iOS 27.1 or later. Inactive regions are not exposed.
-
-To test iPhone Duo behavior, use an Xcode and simulator runtime that include it. The 0.1.0 simulator verification exercised closed, partially open, and flat states,
-including removal and restoration of a division without changing provider bounds.
-Physical Duo hardware and multiple-window behavior remain unverified.
+Regions with `kind: 'occlusion'` identify areas where content is hidden, such as a camera cutout or space reserved by iOS. Keep text and controls outside these areas.
 
 [Apple: adaptive layouts on iPhone Duo](https://developer.apple.com/videos/play/tech-talks/111463/)
 
 ## Android
 
-The library observes Jetpack WindowManager `1.5.1` and reads display cutout bounding rectangles from window insets.
+Android requires API 24 or later. Display cutouts require API 28 or later. Fold information depends on device support for Jetpack WindowManager.
 
-| Native result                        | JavaScript result                               |
+The library reads folds and hinges from Jetpack WindowManager and display cutout rectangles from window insets.
+
+| **Native result**                    | **JavaScript result**                           |
 | ------------------------------------ | ----------------------------------------------- |
 | Separating `FoldingFeature`          | `division`                                      |
 | Fully occluding `FoldingFeature`     | `division`, even if it is not marked separating |
@@ -48,50 +34,40 @@ The library observes Jetpack WindowManager `1.5.1` and reads display cutout boun
 | Other included folding features      | `occludesContent: false`                        |
 | Display cutout rectangle on API 28+  | `occlusion`                                     |
 
-Folding features and cutouts that do not intersect the provider are omitted. Those that do keep their full frames in provider coordinates, as on iOS; the library does not clip them to the provider bounds. See [coordinate spaces](./coordinates.md#native-geometry).
+A fold or hinge is reported when it separates the display into sections or fully hides content. If the device also has a camera cutout, both can appear in the region list.
 
-A non-separating fold with no full occlusion is omitted. Hardware and posture determine what WindowManager reports; an emulator needs a compatible foldable profile to provide folding features. Cutouts and folds are separate sources, so a provider can receive both kinds at once.
+Results can change when the device folds or unfolds. Use a compatible foldable device or emulator to test these changes.
 
-The Android implementation reports display cutouts and the included folding features. It does not report arbitrary overlapping app windows, the keyboard, or system bars as occlusion rectangles.
+The library does not report keyboards, system bars, or overlapping app windows as occlusions.
 
 [Android: FoldingFeature](https://developer.android.com/reference/androidx/window/layout/FoldingFeature) · [Android: DisplayCutout](https://developer.android.com/reference/android/view/DisplayCutout)
 
 ## Other platforms
 
-The fallback component renders a React Native `View` and reports a known empty result after mounting: regions are `[]` and readiness becomes `true`. This does not indicate native support. There is no browser fold or display-cutout integration.
+The provider renders a React Native `View`. After mounting, it returns an empty region list and sets readiness to `true`.
+
+There is no browser fold or display-cutout support.
 
 ## Measurement timing
 
-Android takes its first measurement after Fabric mounts the view, when its event
-emitter is available and before React Native's event beat, and delivers it
-synchronously so gated content mounts with a measured snapshot. Later changes are
-regular events that React receives at the next event beat; when several changes
-arrive before that beat, React ends with the latest. They are not synchronous
-because React Native's `FabricUIManager` accepts one synchronous event per view
-and event name per frame and drops the rest, and a rotation changes the regions
-more than once in a frame. Later React relayouts are measured in the Android
-layout pass. The provider also re-measures when WindowManager
-reports new folding features and when window insets reach the provider, which
-covers display cutout changes unless an ancestor consumes the insets. Scrolling,
-moving an ancestor or transforming the provider does not trigger a measurement.
-Older WindowManager extensions may await their first callback.
-When a measured provider is detached and re-attached, for example by a list's
-`removeClippedSubviews`, it re-measures only if its frame in its parent, the
-folding features or the display cutout changed while it was detached.
+The provider measures regions when its layout or the supported device features change.
 
-On iOS, the provider re-measures when its own layout changes, including a move
-that keeps its size, when it moves into a window, and on hinge updates. Scrolling
-or moving an ancestor does not trigger a measurement. Neither does a transform or
-native-driver animation on the provider, such as a translation, because it does not
-change layout.
+| iOS                              | Android                             |
+| -------------------------------- | ----------------------------------- |
+| The provider lays out            | The provider mounts or lays out     |
+| The provider moves into a window | WindowManager reports a fold change |
+| A hinge update arrives           | Window insets reach the provider    |
 
-iOS measures in `layoutSubviews`. The first measurement after the provider mounts
-is a synchronous event, so `ReservedRegionsGate` content can mount with it. React
-Native processes that event one frame later unless it includes [react/react-native#58530](https://github.com/react/react-native/pull/58530),
-which processes the event beat in the frame that requested it. That change is merged
-into React Native's `main` branch but is not in the 0.88 release candidates.
-Later changes are regular events that React receives at a later event beat. When
-several changes happen before JavaScript processes them, the intermediate ones are
-usually coalesced, and React always ends with the latest.
-Readiness means the provider has completed a measurement; it is not a guarantee
-that every layout change is visible in its first frame.
+Scrolling, moving a parent view, or applying a transform does not trigger a measurement.
+
+On Android:
+
+- Older WindowManager extensions may wait for their first result before the provider becomes ready.
+- A parent view that consumes window insets can prevent cutout updates from reaching the provider.
+- After a provider is detached and reattached, it only measures again if its position or size within its parent, folding features, or cutout changed while detached.
+
+The first measurement requests synchronous delivery to React. Later measurements use regular events. React Native limits synchronous delivery to one event per view and event name per frame, so regular events allow later changes in the same frame to be delivered. Intermediate updates may be combined before JavaScript processes them.
+
+On iOS, processing the first measurement in the same frame requires [React Native #58530](https://github.com/react/react-native/pull/58530). The example’s React Native `0.88.0-rc.1` does not include it.
+
+Readiness confirms that a measurement has completed. It does not guarantee that the resulting layout appears in the first visible frame.
