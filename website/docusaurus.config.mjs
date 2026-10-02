@@ -28,7 +28,7 @@ export default {
     colorMode: { defaultMode: 'light', respectPrefersColorScheme: true },
     navbar: {
       title: 'Reserved Regions',
-      logo: { alt: '', src: 'img/mark.svg' },
+      logo: { alt: '', src: 'img/logo.png' },
       items: [
         { type: 'docSidebar', sidebarId: 'docs', label: 'Documentation', position: 'left' },
         { to: '/docs/api', label: 'API', position: 'left' },

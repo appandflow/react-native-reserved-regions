@@ -1,38 +1,78 @@
 ---
-title: Coordinate spaces
+title: Understanding regions
 description: Scope measurements to a screen, panel, or nested provider.
 ---
 
-Every `frame` is expressed in **logical points relative to the nearest provider's top-left corner**. On Android, physical pixel measurements are converted to density-independent units before reaching JavaScript.
+## What is a region?
 
-| Field    | Meaning                                          |
-| -------- | ------------------------------------------------ |
-| `x`      | Horizontal offset from the provider's left edge. |
-| `y`      | Vertical offset from the provider's top edge.    |
-| `width`  | Horizontal extent of the region.                 |
-| `height` | Vertical extent of the region.                   |
+A region describes a part of the display that affects where you place content. The library reports two types: **divisions** and **occlusions**.
 
-These are provider coordinates, not screen coordinates. A provider can occupy a whole screen or a smaller view.
+### Divisions
 
-## A provider inside a panel
+A division marks a fold in a flexible screen or a hinge between two screens. Divisions are reported as `kind: 'division'`.
 
-```tsx
-<View style={{ flex: 1, padding: 24 }}>
-  <ReservedRegionsProvider style={{ flex: 1 }}>
-    <PanelContent />
-  </ReservedRegionsProvider>
-</View>
+Use `occludesContent` to check whether content is hidden in that area:
+
+- `false`: content remains visible across the division.
+- `true`: content is hidden within the division’s frame.
+
+A division can have zero width or height. Keep these regions when calculating your layout; they still mark a boundary in the display.
+
+Example of a fold that leaves content visible, using illustrative values:
+
+```ts
+{
+  kind: 'division',
+  occludesContent: false,
+  frame: { x: 400, y: 0, width: 0, height: 800 },
+}
 ```
 
-`PanelContent` receives measurements relative to the inset provider. Do not subtract the surrounding padding a second time. If you render an absolute-positioned overlay, place it inside that provider so the overlay and region share an origin. Frames can extend past the provider, so wrap overlays in an absolute-fill `View` with `overflow: 'hidden'` to keep them within its bounds.
+### Occlusions
 
-## Native geometry
+An occlusion marks an area where content is hidden, such as a camera cutout or space reserved by the system.
 
-A provider receives the regions that intersect its bounds. Regions outside the provider are omitted. Each included region keeps its full frame, not only the part inside the provider, so a frame can have a negative `x` or `y` or extend past the provider's width or height. A fold that spans the window keeps its full length even when the provider covers only part of it. A fold can have zero width or height and still be meaningful; do not discard line-shaped regions.
+Occlusions are reported as `kind: 'occlusion'`. They have no `occludesContent` flag because they already represent hidden content.
 
-On Android, the library translates window-relative folding features and cutouts into provider coordinates. On iOS, UIKit performs the view-scoped query and the library forwards the returned frames. UIKit frames can include interaction margins around an obstruction, so they should not be interpreted as exact physical hardware outlines. See [Apple's reserved regions overview](https://developer.apple.com/videos/play/tech-talks/111463/).
+Example of a camera cutout, using illustrative values:
 
-To work with only the visible part, intersect a frame with the provider's size, for example from the provider's `onLayout`:
+```ts
+{
+  kind: 'occlusion',
+  frame: { x: 20, y: 20, width: 30, height: 30 },
+}
+```
+
+### Position and size
+
+The provider is the view your app measures. Both region types include a `frame` describing their position and size relative to that view.
+
+```ts
+const frame = {
+  x: 120,
+  y: 0,
+  width: 20,
+  height: 800,
+};
+```
+
+- `x`: distance from the provider’s left edge.
+- `y`: distance from the provider’s top edge.
+- `width` and `height`: the region’s size.
+
+All values use logical points. On Android, the library converts physical pixels to density-independent units.
+
+## Frames can extend outside the provider
+
+The library includes regions that overlap the provider and returns their full frames. A frame can start outside the provider or extend past its edges.
+
+For example, `y: -10` places the region’s top edge 10 points above the provider.
+
+```ts
+{ x: 0, y: -10, width: 20, height: 100 }
+```
+
+To draw only the part inside the provider, use `overflow: 'hidden'` on the overlay container. You can also calculate that portion using the provider’s size from `onLayout`.
 
 ```ts
 import type { ReservedRegionFrame } from 'react-native-reserved-regions';
@@ -40,6 +80,7 @@ import type { ReservedRegionFrame } from 'react-native-reserved-regions';
 function visiblePart(frame: ReservedRegionFrame, provider: { width: number; height: number }): ReservedRegionFrame {
   const x = Math.max(0, frame.x);
   const y = Math.max(0, frame.y);
+
   return {
     x,
     y,
@@ -49,8 +90,4 @@ function visiblePart(frame: ReservedRegionFrame, provider: { width: number; heig
 }
 ```
 
-The native platforms have different geometry sources. Avoid assuming identical rectangles for similarly shaped hardware across iOS and Android.
-
-## Inspect the difference
-
-The [example app](./example.md) lets you switch between a full-screen provider, a provider inset by 24 points, and a smaller content box. It displays the provider bounds, region frames, and safe area insets together.
+On iOS, a frame may include extra space around an obstruction for touch interactions. It may be larger than the obstruction itself.

@@ -3,31 +3,33 @@ title: API reference
 description: Provider, hook, and documented region types.
 ---
 
-All public exports come from `react-native-reserved-regions`.
+Import all exports from `react-native-reserved-regions`.
 
 ## ReservedRegionsProvider
 
+Wrap the view you want to measure with `ReservedRegionsProvider`. It accepts React Native `ViewProps` and a ref to its native view.
+
 ```ts
 function ReservedRegionsProvider(
-  props: ViewProps & { ref?: React.Ref<React.ComponentRef<typeof View>> },
+  props: ViewProps & {
+    ref?: React.Ref<React.ComponentRef<typeof View>>;
+  },
 ): React.JSX.Element;
 ```
 
-A native view that supplies active reserved regions to descendants. It accepts React Native `ViewProps` and a `ref` to the native view, which you can use like a `View` ref, for example to call `measure`. Give it explicit dimensions or a layout style such as `flex: 1` so there is an area to measure.
-
-Each provider maintains its own measurements. A nested provider replaces the context for its descendants.
+Use the ref to call native view methods such as `measure`.
 
 ## ReservedRegionsGate
+
+Wrap content with `ReservedRegionsGate` to mount it after the nearest provider completes its first measurement, including an empty result.
 
 ```ts
 function ReservedRegionsGate(props: { children?: React.ReactNode }): React.ReactNode;
 ```
 
-Renders `null` until the nearest provider has completed its first measurement,
-then renders `children`, including for an empty result. It adds no native view and
-does not suspend. Throws outside a provider, like `useReservedRegionsReady()`.
-Keep the measured view mounted and sized outside the gate. See
-[performance and first render](./performance.md) for placement and tradeoffs.
+The gate adds no native view and does not use Suspense. Using it outside a provider throws an error.
+
+See [Usage](./usage.md#wait-before-rendering) for an example.
 
 ## useReservedRegions
 
@@ -35,7 +37,11 @@ Keep the measured view mounted and sized outside the gate. See
 function useReservedRegions(): readonly ReservedRegion[];
 ```
 
-Returns regions from the nearest provider, initially `[]`. Throws if there is no provider. The list has no guaranteed stable IDs or ordering. Treat both the array and its values as read-only.
+Returns the regions from the nearest provider. Before the first measurement, it returns an empty array.
+
+Treat the array and its values as read-only. Regions have no stable IDs or guaranteed order.
+
+Calling the hook outside a provider throws an error.
 
 ## useReservedRegionsReady
 
@@ -43,55 +49,52 @@ Returns regions from the nearest provider, initially `[]`. Throws if there is no
 function useReservedRegionsReady(): boolean;
 ```
 
-Returns whether the nearest provider has reported its first measurement. Initially `false`, then `true` even when the measured region array is empty. Regions and readiness update together. It stays true for that provider's lifetime and resets for a newly mounted provider. Throws if there is no provider.
+Returns `false` while the first measurement is pending and `true` when it completes, including when no regions are found.
 
-Readiness does not indicate hardware support or guarantee first-visible-frame timing. An unsupported platform reports a known empty result. A provider without laid-out bounds remains pending; Android also waits for its first WindowManager result when a synchronous query is unavailable.
+Readiness and regions update together. Readiness stays `true` until the provider unmounts. A new provider starts pending.
+
+Calling the hook outside a provider throws an error.
 
 ## ReservedRegionFrame
 
+Describes a region’s position and size.
+
 ```ts
-/** Bounds in logical points relative to the nearest provider. Not clipped to the provider. */
 type ReservedRegionFrame = Readonly<{
-  /** Horizontal distance from the provider's left edge. */
   x: number;
-  /** Vertical distance from the provider's top edge. */
   y: number;
-  /** Horizontal extent; can be zero for a vertical fold. */
   width: number;
-  /** Vertical extent; can be zero for a horizontal fold. */
   height: number;
 }>;
 ```
 
-A frame can extend past the provider's edges. Read [coordinate spaces](./coordinates.md) to get the visible part and for interaction-margin behavior.
+`x` and `y` are measured from the provider’s left and top edges. `width` and `height` describe the region’s size.
+
+See [Understanding regions](./coordinates.md) for units, zero-width or zero-height divisions, and frames that extend outside the provider.
 
 ## ReservedRegion
 
 ```ts
-/** An active area reserved by the display or supported system UI. */
 type ReservedRegion =
   | Readonly<{
-      /** A seam, hinge, or fold dividing the usable display. */
       kind: 'division';
-      /** Bounds in the provider's coordinate space. */
       frame: ReservedRegionFrame;
-      /** True when content underneath this division is hidden. */
       occludesContent: boolean;
     }>
   | Readonly<{
-      /** A reserved area where content is hidden, such as a cutout. */
       kind: 'occlusion';
-      /** Bounds in the provider's coordinate space. */
       frame: ReservedRegionFrame;
     }>;
 ```
 
-`kind` is a string-literal discriminant, not a runtime enum. `occludesContent` exists only on divisions: it distinguishes a visible fold from an occluding hinge. Occlusion regions already express hidden content and do not carry the boolean.
+A division represents a fold or hinge. Use `occludesContent` to check whether content is hidden within its frame.
+
+An occlusion represents an area where content is hidden. It has no `occludesContent` property.
+
+Check `kind` before accessing properties specific to a region type.
 
 ```ts
 function hidesContent(region: ReservedRegion): boolean {
   return region.kind === 'occlusion' || region.occludesContent;
 }
 ```
-
-Currently iOS divisions always have `occludesContent: false`. Android derives it from `FoldingFeature.OcclusionType.FULL`. See [platform behavior](./platforms.md).

@@ -1,36 +1,36 @@
 ---
-title: Installation
-description: Install the package and check native platform requirements.
+title: Getting Started
+description: Set up react-native-reserved-regions.
 ---
 
-`react-native-reserved-regions` reports display divisions and occlusions relative to a React Native view. Use it to inspect folds, hinges, camera cutouts, and supported system-reserved areas before choosing where to place content.
+![React Native Reserved Regions](../../docs/assets/github-banner.jpg)
 
-## Release status
+`react-native-reserved-regions` reports folds, hinges, cutouts, and system-reserved areas relative to your React Native views.
 
-The current release is `0.2.0`. See the [release notes](https://github.com/appandflow/react-native-reserved-regions/blob/main/docs/releases/0.2.0.md)
-for changes from `0.1.0`, including unclipped Android frames. The first measurement requests
-synchronous delivery; see [measurement timing](./performance.md) for its limits. The repository [example](./example.md)
-remains useful for testing native behavior on supported devices and simulators.
+## Installation
 
-```sh
-npm install react-native-reserved-regions
-```
+1. Install the package:
 
-## Requirements
+   ```sh
+   npm install react-native-reserved-regions
+   ```
 
-| Platform     | Requirement                                                                                                                                                                                                                                                                                   |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| React Native | `0.80` or later with the New Architecture / Fabric.                                                                                                                                                                                                                                           |
-| iOS          | Build with the iOS 27.1 SDK or later and run on iOS 27.1 or later to receive UIKit reserved regions. Older SDKs compile out reserved-region observation, including on newer devices; older runtimes return empty lists. The deployment minimum follows React Native's CocoaPods requirements. |
-| Android      | API 24 or later, or your app's higher minimum. Display cutouts require API 28. Folds require device support for Jetpack WindowManager.                                                                                                                                                        |
+2. For iOS, install CocoaPods dependencies:
 
-Install CocoaPods dependencies after adding the package:
+   ```sh
+   cd ios
+   bundle exec pod install
+   cd ..
+   ```
 
-```sh
-cd ios
-bundle exec pod install
-```
+   Android requires no additional setup; React Native links the library automatically.
 
-Android uses React Native autolinking. Rebuild your native app on either platform after installation. This package includes a native Fabric view, so adding the JavaScript dependency alone is insufficient.
+3. Rebuild your app.
 
-Continue with [the provider and hook](./usage.md).
+:::info Requirements
+
+- **React Native:** 0.80 or later with the New Architecture enabled.
+- **iOS:** Receiving reserved regions requires building with the iOS 27.1 SDK or later and running on iOS 27.1 or later. The library works with older SDKs and runtimes but returns no reserved regions.
+- **Android:** API 24 or later. Display cutouts require API 28 or later; fold information requires a supported device.
+
+:::
