@@ -103,8 +103,8 @@ or moving an ancestor does not trigger a measurement. On iOS, same-frame deliver
 Readiness indicates a completed measurement, not a
 universal first-frame guarantee.
 
-The [performance guide](https://rnrr.appandflow.com/docs/performance)
-explains provider placement and optional readiness gating.
+The [Usage guide](https://rnrr.appandflow.com/docs/usage#wait-before-rendering)
+shows how to wait for the first measurement before rendering content.
 
 ## Development
 

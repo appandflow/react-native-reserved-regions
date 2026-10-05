@@ -9,7 +9,7 @@ pnpm install
 pnpm run docs:start
 ```
 
-Open the URL printed by Docusaurus. The site uses the `/react-native-reserved-regions/` base path.
+Open the URL printed by Docusaurus. The site uses the `/` base path.
 
 ```sh
 pnpm run format:check
