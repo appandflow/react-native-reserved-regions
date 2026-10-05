@@ -99,11 +99,11 @@ events. Android measures after Fabric mounting
 and again on its own relayout, fold changes and window inset changes; scrolling
 or moving an ancestor does not trigger a measurement. On iOS, same-frame delivery requires React Native
 [#58530](https://github.com/react/react-native/pull/58530); see
-[measurement timing](https://appandflow.github.io/react-native-reserved-regions/docs/platforms#measurement-timing).
+[measurement timing](https://rnrr.appandflow.com/docs/platforms#measurement-timing).
 Readiness indicates a completed measurement, not a
 universal first-frame guarantee.
 
-The [Usage guide](https://appandflow.github.io/react-native-reserved-regions/docs/usage#wait-before-rendering)
+The [Usage guide](https://rnrr.appandflow.com/docs/usage#wait-before-rendering)
 shows how to wait for the first measurement before rendering content.
 
 ## Development
