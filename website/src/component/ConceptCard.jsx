@@ -15,7 +15,7 @@ export default function ConceptCard({ concept, isFirst }) {
       <h2 className={shared.heading}>{concept.title}</h2>
       <p className={[shared.description, styles.conceptDescription].join(' ')}>{concept.description}</p>
       <Link to={concept.to} className={[shared.link, shared.textLink].join(' ')}>
-        {concept.label} <span aria-hidden="true">↗</span>
+        {concept.label}
       </Link>
       <Illustration
         file={concept.image}

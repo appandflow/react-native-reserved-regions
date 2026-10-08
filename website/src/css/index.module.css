@@ -58,6 +58,7 @@
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
+  transition: transform 150ms ease;
 }
 
 .button::before {
@@ -72,11 +73,23 @@
   z-index: -1;
 }
 
-.button:hover::before {
-  transform: translateY(0);
+.button:active {
+  transform: scale(0.96);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button:hover::before {
+    transform: translateY(0);
+  }
+
+  .copyButton:hover {
+    transform: scale(1.15);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .button,
+  .copyButton,
   .button::before {
     transition: none;
   }
@@ -189,6 +202,7 @@
 .copyButton {
   padding: 8px;
   cursor: pointer;
+  transition: transform 200ms ease;
 }
 
 .copyIcons {
@@ -235,11 +249,6 @@
 .exampleButton {
   font-size: 14px;
   gap: 8px;
-}
-
-.icon {
-  width: 16px;
-  height: 16px;
 }
 
 .footer {
