@@ -203,7 +203,7 @@ export default function Home() {
                   interior.
                 </p>
                 <Link to="/docs/safe-area" className={[shared.link, shared.textLink].join(' ')}>
-                  Learn more <span aria-hidden="true">↗</span>
+                  Learn more
                 </Link>
               </div>
 
@@ -217,14 +217,7 @@ export default function Home() {
                   regions.
                 </p>
                 <Link to="/docs/example" className={[styles.button, styles.exampleButton].join(' ')}>
-                  <Illustration
-                    file="github-white.png"
-                    alt="Github white logo"
-                    width={48}
-                    height={48}
-                    className={styles.icon}
-                  />
-                  Example app ↗
+                  Example app
                 </Link>
               </div>
             </section>
