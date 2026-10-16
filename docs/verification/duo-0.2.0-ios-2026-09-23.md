@@ -125,6 +125,11 @@ agent-device fold --keyframes '[{"atMs":0,"angle":130},{"atMs":2000,"angle":180}
 The job takes about 13 minutes; the runtime download takes about 1.5 to 3
 minutes.
 
+`pnpm run e2e:ios`, described in
+[Automated iOS check](../workflow.md#automated-ios-check), repeats the geometry
+checks for steps 2, 3, 5, 7 and 8 from the on-screen text, without the logging
+patch.
+
 ### Runner constraints
 
 - The standard `xcode-27` runner (3 vCPUs, 7 GiB) stopped responding within

@@ -105,6 +105,52 @@ a device without one has no device state 1. The same script runs in the opt-in
 `e2e-android` GitHub Actions workflow, which is triggered manually or by adding the
 `e2e-android` label to a pull request.
 
+### Automated iOS check
+
+```sh
+DEVELOPER_DIR=/Applications/Xcode-27.1.0-Beta.app/Contents/Developer pnpm run e2e:ios
+```
+
+Prerequisites:
+
+- Xcode 27.1 beta from [developer.apple.com](https://developer.apple.com/download/applications/),
+  selected through `DEVELOPER_DIR` or `xcode-select`. It provides the iPhone Duo
+  device type.
+- The iOS 27.1 simulator runtime, installed with `xcodebuild -downloadPlatform iOS`
+  using the same `DEVELOPER_DIR`.
+- agent-device 0.21.12 or newer on `PATH`, for its `fold` command.
+- CocoaPods installed in `example/`, as described below.
+
+The script checks the Xcode version, the iPhone Duo device type, the runtime and
+the agent-device version first and exits with a message naming the missing piece.
+It reuses or creates an iPhone Duo simulator named `Reserved Regions E2E`, boots it
+headless with `simctl`, builds and installs the example Release configuration, so
+the run does not need a Metro server, and opens the app. It then opens the hinge to
+130° with `agent-device fold` and asserts from the on-screen text:
+
+- Full screen: the measurement reports Ready, there is exactly one division whose
+  center is between 45 and 55 percent of the provider width, whose y is 0 and whose
+  height matches the provider height within 2 points, and exactly one occlusion in
+  the provider top-right corner.
+- Shift 40: the provider size is unchanged and the division x is the full-screen x
+  minus 40 within 1 point.
+- Content box: one division with a negative y and a height larger than the
+  provider, so the frame is not clipped, and no occlusion.
+- Inset 24: opening to 180° removes the division without changing the provider
+  size, and folding back to 130° restores the same division with the same provider
+  size.
+
+Each screen is read after two consecutive identical snapshots. A screenshot of each
+asserted state is written to the ignored `e2e/artifacts/` directory, and a failure
+prints the accessibility snapshot before exiting non-zero. The simulator stays
+booted in its last posture; other simulators are not touched.
+
+Set `E2E_IOS_UDID` to use an existing iPhone Duo simulator on iOS 27.1 or newer, and
+`E2E_SKIP_BUILD=1` to reuse the installed app. This check has no workflow in the
+repository. The GitHub-hosted `xcode-27-xlarge` runner can run it after
+`xcodebuild -downloadPlatform iOS`; the standard `xcode-27` runner stops responding
+after booting the iPhone Duo.
+
 Use the device ID reported by Stim for app automation and screenshots. Some Duo
 capture tools default to the inactive display; enumerate displays with
 `xcrun simctl io <udid> enumerate` and choose the active display explicitly.

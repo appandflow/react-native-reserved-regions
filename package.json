@@ -57,6 +57,7 @@
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "e2e:android": "node e2e/android.mjs",
+    "e2e:ios": "node e2e/ios.mjs",
     "docs:build": "pnpm --filter reserved-regions-docs build",
     "docs:start": "pnpm --filter reserved-regions-docs start"
   },
