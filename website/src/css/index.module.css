@@ -44,9 +44,7 @@
 }
 
 .button {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
+  transform-origin: bottom center;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -61,16 +59,19 @@
   transition: transform 150ms ease;
 }
 
-.button::before {
-  content: '';
-  position: absolute;
-  inset: -50% -10%;
-  background: #008cff;
-  border-radius: 45% 55% 0 0;
-  transform: translateY(100%);
-  transition: transform 700ms ease;
-  pointer-events: none;
-  z-index: -1;
+@keyframes buttonSquish {
+  33% {
+    transform: scale(1.02, 0.98);
+  }
+  66% {
+    transform: scale(0.99, 1.01);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button:hover {
+    animation: buttonSquish 300ms ease-out;
+  }
 }
 
 .button:active {
@@ -78,10 +79,6 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .button:hover::before {
-    transform: translateY(0);
-  }
-
   .copyButton:hover {
     transform: scale(1.15);
   }
@@ -89,8 +86,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .button,
-  .copyButton,
-  .button::before {
+  .copyButton {
     transition: none;
   }
 }
