@@ -18,6 +18,8 @@ Divisions are reported with `occludesContent: false`. They mark a boundary in th
 
 Regions with `kind: 'occlusion'` identify areas where content is hidden, such as a camera cutout or space reserved by iOS. Keep text and controls outside these areas.
 
+`useBarRegion` reads `UITraitCollection.verticalBarEdge` and the window’s `UIViewLayoutRegion` for a bar on that edge, then converts the frame to provider coordinates. It returns `null` when the edge is unspecified, the region is empty or the region does not overlap the provider. The window is queried because UIKit computes a view’s own bar region from that view’s bounds: a provider shifted or inset away from the column would get a region at its own edge instead of the column.
+
 [Apple: adaptive layouts on iPhone Duo](https://developer.apple.com/videos/play/tech-talks/111463/)
 
 ## Android
@@ -40,6 +42,8 @@ Results can change when the device folds or unfolds. Use a compatible foldable d
 
 The library does not report keyboards, system bars, or overlapping app windows as occlusions.
 
+`useBarRegion` always returns `null` on Android.
+
 [Android: FoldingFeature](https://developer.android.com/reference/androidx/window/layout/FoldingFeature) · [Android: DisplayCutout](https://developer.android.com/reference/android/view/DisplayCutout)
 
 ## Other platforms
@@ -57,6 +61,8 @@ The provider measures regions when its layout or the supported device features c
 | The provider lays out            | The provider mounts or lays out     |
 | The provider moves into a window | WindowManager reports a fold change |
 | A hinge update arrives           | Window insets reach the provider    |
+| The vertical bar edge changes    |                                     |
+| `useBarRegion` adds an extent    |                                     |
 
 Scrolling, moving a parent view, or applying a transform does not trigger a measurement.
 

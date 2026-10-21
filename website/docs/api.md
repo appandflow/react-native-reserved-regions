@@ -55,6 +55,44 @@ Readiness and regions update together. Readiness stays `true` until the provider
 
 Calling the hook outside a provider throws an error.
 
+## useBarRegion
+
+```ts
+function useBarRegion(options: BarRegionOptions): BarRegion | null;
+```
+
+Returns where the system places bar content of the given `extent`, in the nearest provider’s coordinates. On iPhone Duo this is the status column; native back buttons and tab bar items are positioned from the same region.
+
+`extent` is the width in points of the content you place, such as a 44-point button. The region depends on it, so each extent is measured separately. Hooks that request the same extent share one measurement.
+
+Returns `null` when:
+
+- No vertical bar overlaps the provider.
+- The app is built with an SDK older than iOS 27.1, or runs on an older iOS version.
+- The app runs on Android or another platform.
+- The provider has not measured this extent yet.
+
+The provider measures a new extent one layout pass after the hook first requests it, so the first render returns `null` even on a device with a vertical bar. `useReservedRegionsReady` and `ReservedRegionsGate` do not wait for bar regions.
+
+Calling the hook outside a provider throws an error.
+
+See [Vertical bars](./coordinates.md#vertical-bars) for an example.
+
+## BarRegion
+
+```ts
+type BarRegionOptions = Readonly<{
+  extent: number;
+}>;
+
+type BarRegion = Readonly<{
+  edge: 'leading' | 'trailing';
+  frame: ReservedRegionFrame;
+}>;
+```
+
+`edge` is the layout-direction edge that holds the vertical bar. `frame` is the region for content of the requested extent, relative to the provider. Like other frames, it is not clipped to the provider.
+
 ## ReservedRegionFrame
 
 Describes a region’s position and size.

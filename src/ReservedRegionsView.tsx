@@ -3,12 +3,13 @@ import { View, type ViewProps } from 'react-native';
 import type { RegionsChangeEvent } from './ReservedRegionsViewNativeComponent';
 
 export type ReservedRegionsViewProps = ViewProps & {
+  barExtents?: readonly number[];
   onRegionsChange?: (event: { nativeEvent: RegionsChangeEvent }) => void;
 };
 
-export function ReservedRegionsView({ onRegionsChange, ...props }: ReservedRegionsViewProps) {
+export function ReservedRegionsView({ onRegionsChange, barExtents: _barExtents, ...props }: ReservedRegionsViewProps) {
   useEffect(() => {
-    onRegionsChange?.({ nativeEvent: { regions: [] } });
+    onRegionsChange?.({ nativeEvent: { regions: [], bars: [] } });
   }, [onRegionsChange]);
   return <View {...props} />;
 }

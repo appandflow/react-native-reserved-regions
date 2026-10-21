@@ -43,6 +43,44 @@ Example of a camera cutout, using illustrative values:
 }
 ```
 
+### Vertical bars
+
+Some displays place system status in a vertical bar along one side, such as the status column on iPhone Duo. Occlusions mark where the column hides content. A bar region marks where controls go: UIKit centers it on the status icons and places native bar items, such as the back button, inside it.
+
+Request the region with the width of the content you place:
+
+```tsx
+import { Pressable, StyleSheet } from 'react-native';
+import { useBarRegion } from 'react-native-reserved-regions';
+
+function BackButton({ onPress }: { onPress: () => void }) {
+  const bar = useBarRegion({ extent: 44 });
+  if (bar === null) {
+    return null;
+  }
+  return (
+    <Pressable
+      accessibilityLabel="Back"
+      onPress={onPress}
+      style={[styles.button, { left: bar.frame.x, top: bar.frame.y }]}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  button: { position: 'absolute', width: 44, height: 44 },
+});
+```
+
+Measured on the iPhone Duo simulator running iOS 27.1, with a full-screen provider:
+
+| Posture  | Provider  | Occlusions                                                    | Bar region, extent 44 | Bar region, extent 48 |
+| -------- | --------- | ------------------------------------------------------------- | --------------------- | --------------------- |
+| Folded   | 466 × 678 | camera `399.7, 29.3, 37 × 37`, status area `382, 0, 84 × 174` | `396, 174, 44 × 470`  | `394, 174, 48 × 470`  |
+| Unfolded | 951 × 669 | status area `867, 0, 84 × 124`                                | `881, 124, 44 × 511`  | `879, 124, 48 × 511`  |
+
+The bar region starts below the status area and is centered on the same vertical line for each extent.
+
 ### Position and size
 
 The provider is the view your app measures. Both region types include a `frame` describing their position and size relative to that view.

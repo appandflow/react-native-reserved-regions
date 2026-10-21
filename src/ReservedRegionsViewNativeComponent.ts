@@ -11,9 +11,20 @@ export type RegionsChangeEvent = Readonly<{
     };
     occludesContent: boolean;
   }[];
+  bars?: {
+    extent: CodegenTypes.Double;
+    edge: string;
+    frame: {
+      x: CodegenTypes.Double;
+      y: CodegenTypes.Double;
+      width: CodegenTypes.Double;
+      height: CodegenTypes.Double;
+    };
+  }[];
 }>;
 
 export interface NativeProps extends ViewProps {
+  barExtents?: ReadonlyArray<CodegenTypes.Double>;
   onRegionsChange?: CodegenTypes.DirectEventHandler<RegionsChangeEvent>;
 }
 
