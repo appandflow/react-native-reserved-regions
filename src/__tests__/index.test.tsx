@@ -5,6 +5,7 @@ import { act, create } from 'react-test-renderer';
 import {
   ReservedRegionsGate,
   ReservedRegionsProvider,
+  useBarRegion,
   useReservedRegions,
   useReservedRegionsReady,
   type ReservedRegion,
@@ -13,25 +14,32 @@ import type { RegionsChangeEvent } from '../ReservedRegionsViewNativeComponent';
 
 type Handler = (event: { nativeEvent: RegionsChangeEvent }) => void;
 const mockHandlers = new Map<string, Handler>();
+const mockBarExtents = new Map<string, readonly number[] | undefined>();
 
 jest.mock('../ReservedRegionsView', () => ({
   ReservedRegionsView: ({
     children,
+    barExtents,
     onRegionsChange,
     testID = 'default',
     ref,
   }: {
     children: React.ReactNode;
+    barExtents?: readonly number[];
     onRegionsChange: Handler;
     testID?: string;
     ref?: React.Ref<React.ComponentRef<typeof View>>;
   }) => {
     mockHandlers.set(testID, onRegionsChange);
+    mockBarExtents.set(testID, barExtents);
     const { View: MockView } = jest.requireActual<typeof import('react-native')>('react-native');
     return <MockView ref={ref}>{children}</MockView>;
   },
 }));
-beforeEach(() => mockHandlers.clear());
+beforeEach(() => {
+  mockHandlers.clear();
+  mockBarExtents.clear();
+});
 
 const division = {
   kind: 'division',
@@ -174,6 +182,82 @@ it('attaches a ref to the provider view', async () => {
   await act(() => renderer.unmount());
 });
 
+const barFrame = { x: 394, y: 174, width: 48, height: 470 };
+
+function Bar({ extent }: { extent: number }) {
+  useBarRegion({ extent });
+  return null;
+}
+
+function barTree(extents: number[]) {
+  return (
+    <ReservedRegionsProvider>
+      {extents.map((extent, index) => (
+        <Bar key={index} extent={extent} />
+      ))}
+    </ReservedRegionsProvider>
+  );
+}
+
+it('requests each bar extent once and stops requesting it after the last hook unmounts', async () => {
+  let renderer: ReturnType<typeof create>;
+  await act(() => {
+    renderer = create(barTree([48, 44, 48]));
+  });
+  expect(mockBarExtents.get('default')).toEqual([48, 44]);
+  await act(() => renderer.update(barTree([48, 44])));
+  expect(mockBarExtents.get('default')).toEqual([48, 44]);
+  await act(() => renderer.update(barTree([44])));
+  expect(mockBarExtents.get('default')).toEqual([44]);
+  await act(() => renderer.update(barTree([])));
+  expect(mockBarExtents.get('default')).toEqual([]);
+  await act(() => renderer.unmount());
+});
+
+it('returns null until the extent is measured, then the provider-relative bar region', async () => {
+  const observed: ReturnType<typeof useBarRegion>[] = [];
+  function Probe() {
+    observed.push(useBarRegion({ extent: 48 }));
+    return null;
+  }
+  let renderer: ReturnType<typeof create>;
+  await act(() => {
+    renderer = create(
+      <ReservedRegionsProvider>
+        <Probe />
+      </ReservedRegionsProvider>,
+    );
+  });
+  expect(observed.at(-1)).toBeNull();
+  await act(() => mockHandlers.get('default')?.({ nativeEvent: { regions: [] } }));
+  expect(observed.at(-1)).toBeNull();
+  await act(() =>
+    mockHandlers.get('default')?.({
+      nativeEvent: { regions: [], bars: [{ extent: 44, edge: 'trailing', frame: barFrame }] },
+    }),
+  );
+  expect(observed.at(-1)).toBeNull();
+  await act(() =>
+    mockHandlers.get('default')?.({
+      nativeEvent: { regions: [], bars: [{ extent: 48, edge: 'trailing', frame: barFrame }] },
+    }),
+  );
+  expect(observed.at(-1)).toEqual({ edge: 'trailing', frame: barFrame });
+  await act(() =>
+    mockHandlers.get('default')?.({
+      nativeEvent: { regions: [], bars: [{ extent: 48, edge: 'leading', frame: barFrame }] },
+    }),
+  );
+  expect(observed.at(-1)).toEqual({ edge: 'leading', frame: barFrame });
+  await act(() =>
+    mockHandlers.get('default')?.({
+      nativeEvent: { regions: [], bars: [{ extent: 48, edge: 'none', frame: { x: 0, y: 0, width: 0, height: 0 } }] },
+    }),
+  );
+  expect(observed.at(-1)).toBeNull();
+  await act(() => renderer.unmount());
+});
+
 it.each([useReservedRegions, useReservedRegionsReady])('%p throws outside a provider', (useHook) => {
   function Probe() {
     useHook();
@@ -186,6 +270,14 @@ it.each([useReservedRegions, useReservedRegionsReady])('%p throws outside a prov
   }).toThrow(`${useHook.name} must be used inside ReservedRegionsProvider`);
 });
 
+it('useBarRegion throws outside a provider', () => {
+  expect(() => {
+    act(() => {
+      create(<Bar extent={44} />);
+    });
+  }).toThrow('useBarRegion must be used inside ReservedRegionsProvider');
+});
+
 it('the unsupported-platform view reports a known empty result', async () => {
   const { ReservedRegionsView } =
     jest.requireActual<typeof import('../ReservedRegionsView')>('../ReservedRegionsView.tsx');
@@ -194,6 +286,6 @@ it('the unsupported-platform view reports a known empty result', async () => {
   await act(() => {
     renderer = create(<ReservedRegionsView onRegionsChange={onRegionsChange} />);
   });
-  expect(onRegionsChange).toHaveBeenCalledWith({ nativeEvent: { regions: [] } });
+  expect(onRegionsChange).toHaveBeenCalledWith({ nativeEvent: { regions: [], bars: [] } });
   await act(() => renderer.unmount());
 });

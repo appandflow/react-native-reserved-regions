@@ -92,7 +92,8 @@ Ready, that there is exactly one division and that the division is a line at
 most 1 point wide (the foldable emulator reports a one-pixel hinge) whose x is
 between 40 and 60 percent of the provider width and whose height matches the
 provider height within 2 points, and that there is exactly one
-occlusion whose frame sits in the provider top-right corner. It then taps Content
+occlusion whose frame sits in the provider top-right corner, and that both bar
+region lines read none. It then taps Content
 box and asserts Ready, one remaining division and no occlusion. A screenshot of
 each asserted state is written to the ignored `e2e/artifacts/` directory, and a
 failure prints the accessibility snapshot before exiting non-zero. The posture

@@ -49,10 +49,13 @@ See [Getting Started](./installation.md) for platform requirements.
 | Dashed green | Safe area edges |
 | Orange       | Divisions       |
 | Purple       | Occlusions      |
+| Teal         | Bar region      |
 
 Zero-width or zero-height divisions are drawn as two-point lines so they remain visible. The text shows their original measurements.
 
 The app displays Pending until measurement completes, then Ready. The example displays the regions reported by your device.
+
+When the device has a vertical bar, the example draws the 44-point bar region and places a round button inside it. The text lists the bar regions for 44- and 48-point extents and counts taps on the button.
 
 ## Change the provider bounds
 

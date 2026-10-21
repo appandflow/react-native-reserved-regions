@@ -123,6 +123,7 @@ function readScreen() {
     height: Number(provider[2]),
     divisions: regions.filter((region) => region.kind === 'division'),
     occlusions: regions.filter((region) => region.kind === 'occlusion'),
+    bars: texts.filter((text) => /^Bar \d+: /.test(text)),
   };
 }
 
@@ -154,6 +155,10 @@ function assertFullScreen(screen) {
     `full screen: occlusion right edge ${(occlusion.x + occlusion.width).toFixed(1)} is within 2 points of provider width ${width.toFixed(1)}`,
   );
   expect(occlusion.y === 0, `full screen: occlusion y is 0.0, got ${occlusion.y.toFixed(1)}`);
+  expect(
+    screen.bars.length === 2 && screen.bars.every((bar) => bar.endsWith(': none')),
+    `full screen: no bar region for either extent, got ${JSON.stringify(screen.bars)}`,
+  );
 }
 
 function assertContentBox(screen) {

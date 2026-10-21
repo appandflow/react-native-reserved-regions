@@ -1,16 +1,34 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ReservedRegionsProvider, useReservedRegions, useReservedRegionsReady } from 'react-native-reserved-regions';
+import {
+  ReservedRegionsProvider,
+  useBarRegion,
+  useReservedRegions,
+  useReservedRegionsReady,
+  type BarRegion,
+} from 'react-native-reserved-regions';
 
 const layouts = ['Full screen', 'Shift 40', 'Inset 24', 'Content box'] as const;
 type Layout = (typeof layouts)[number];
+const barButtonSize = 44;
+
+function describeBar(extent: number, bar: BarRegion | null) {
+  if (bar === null) {
+    return `Bar ${extent}: none`;
+  }
+  const { x, y, width, height } = bar.frame;
+  return `Bar ${extent}: ${bar.edge} · x ${x.toFixed(1)} · y ${y.toFixed(1)} · ${width.toFixed(1)} × ${height.toFixed(1)}`;
+}
 
 function RegionInspector() {
   const regions = useReservedRegions();
   const isReady = useReservedRegionsReady();
   const insets = useSafeAreaInsets();
   const frame = useSafeAreaFrame();
+  const bar = useBarRegion({ extent: barButtonSize });
+  const wideBar = useBarRegion({ extent: 48 });
+  const [barTaps, setBarTaps] = useState(0);
 
   return (
     <>
@@ -42,12 +60,21 @@ function RegionInspector() {
             ]}
           />
         ))}
+        {bar ? (
+          <View
+            style={[
+              styles.overlay,
+              styles.bar,
+              { left: bar.frame.x, top: bar.frame.y, width: bar.frame.width, height: bar.frame.height },
+            ]}
+          />
+        ) : null}
       </View>
       <ScrollView contentContainerStyle={[styles.content, { paddingTop: Math.max(insets.top, 24) + 24 }]}>
         <Text style={styles.title}>Reserved regions</Text>
         <Text style={styles.description}>
           Both providers use the blue rectangle. Green marks the safe area; orange marks divisions; purple marks
-          occlusions.
+          occlusions; teal marks the 44-point bar region, which holds the round button.
         </Text>
         <Text style={styles.metric}>
           Provider: {frame.width.toFixed(1)} × {frame.height.toFixed(1)}
@@ -73,7 +100,20 @@ function RegionInspector() {
             </Text>
           ))
         )}
+        <Text style={styles.metric}>{describeBar(barButtonSize, bar)}</Text>
+        <Text style={styles.metric}>{describeBar(48, wideBar)}</Text>
+        <Text style={styles.metric}>Bar button taps: {barTaps}</Text>
       </ScrollView>
+      {bar ? (
+        <Pressable
+          accessibilityLabel="Bar button"
+          accessibilityRole="button"
+          onPress={() => setBarTaps((taps) => taps + 1)}
+          style={[styles.barButton, { left: bar.frame.x + (bar.frame.width - barButtonSize) / 2, top: bar.frame.y }]}
+        >
+          <Text style={styles.barButtonText}>+</Text>
+        </Pressable>
+      ) : null}
       <View pointerEvents="none" style={styles.boundary} />
     </>
   );
@@ -193,6 +233,23 @@ const styles = StyleSheet.create({
   },
   occlusion: {
     backgroundColor: '#7f3fbd99',
+  },
+  bar: {
+    backgroundColor: '#1f9e8a66',
+  },
+  barButton: {
+    position: 'absolute',
+    width: barButtonSize,
+    height: barButtonSize,
+    borderRadius: barButtonSize / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#14213d',
+  },
+  barButtonText: {
+    color: '#ffffff',
+    fontSize: 24,
+    fontWeight: '600',
   },
   controls: {
     position: 'absolute',
