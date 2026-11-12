@@ -30,7 +30,9 @@
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
-    "!**/.*"
+    "!**/.*",
+    "Package.swift",
+    "spm-headers"
   ],
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -140,5 +142,8 @@
         }
       ]
     ]
+  },
+  "swiftpmConfig": {
+    "name": "ReservedRegions"
   }
 }
