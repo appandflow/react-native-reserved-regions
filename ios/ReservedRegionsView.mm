@@ -116,12 +116,12 @@ using namespace facebook::react;
     return;
   }
   _hasDispatchedRegions = YES;
-  eventEmitter->experimental_flushSync([eventEmitter, regions = std::move(regionPayloads)]() mutable {
-    eventEmitter->dispatchEvent(
-        "regionsChange",
-        folly::dynamic::object("regions", std::move(regions)),
-        RawEvent::Category::Discrete);
-  });
+  // Not experimental_flushSync: it makes the main thread wait for JS, so a JS call that uses
+  // dispatch_sync to the main queue at that moment deadlocks the app (#45).
+  eventEmitter->dispatchEvent(
+      "regionsChange",
+      folly::dynamic::object("regions", std::move(regionPayloads)),
+      RawEvent::Category::Discrete);
 }
 
 - (void)prepareForRecycle

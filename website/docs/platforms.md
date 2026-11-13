@@ -66,8 +66,8 @@ On Android:
 - A parent view that consumes window insets can prevent cutout updates from reaching the provider.
 - After a provider is detached and reattached, it only measures again if its position or size within its parent, folding features, or cutout changed while detached.
 
-The first measurement requests synchronous delivery to React. Later measurements use regular events. React Native limits synchronous delivery to one event per view and event name per frame, so regular events allow later changes in the same frame to be delivered. Intermediate updates may be combined before JavaScript processes them.
+On Android, the first measurement requests synchronous delivery to React. Later measurements use regular events. React Native limits synchronous delivery to one event per view and event name per frame, so regular events allow later changes in the same frame to be delivered. Intermediate updates may be combined before JavaScript processes them.
 
-On iOS, processing the first measurement in the same frame requires [React Native #58530](https://github.com/react/react-native/pull/58530). The example’s React Native `0.88.0-rc.1` does not include it.
+On iOS, every measurement uses a regular event. A synchronous flush makes the main thread wait for JavaScript, and a JavaScript call that waits for the main thread at the same moment would deadlock the app.
 
 Readiness confirms that a measurement has completed. It does not guarantee that the resulting layout appears in the first visible frame.
